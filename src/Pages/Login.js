@@ -1,4 +1,4 @@
-const SignUpForm = () => {
+const Login = () => {
   return (
     //leftside image
     <div className="h-screen w-full flex flex-col md:flex-row">
@@ -26,7 +26,6 @@ const SignUpForm = () => {
           <h2 className="text-2xl font-bold text-[#51803e] mb-6 text-center">
             Sign Up
           </h2>
-
           <div className="mb-4">
             <label className="block text-neutral-900 mb-2" htmlFor="name">
               Name
@@ -38,7 +37,6 @@ const SignUpForm = () => {
               className="w-full px-4 py-2 rounded-md bg-[#fcfdfb]  focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border border-[#9ca3af]"
             />
           </div>
-
           <div className="mb-4">
             <label className="block text-neutral-900 mb-2" htmlFor="email">
               Email
@@ -50,7 +48,6 @@ const SignUpForm = () => {
               className="w-full px-4 py-2 rounded-md bg-[#fcfdfb]  focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border border-[#9ca3af]"
             />
           </div>
-
           <div className="mb-4">
             <label className="block text-neutral-900 mb-2" htmlFor="password">
               Password
@@ -62,7 +59,6 @@ const SignUpForm = () => {
               className="w-full px-4 py-2 rounded-md bg-[#fcfdfb]  focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border border-[#9ca3af]"
             />
           </div>
-
           <div className="mb-6">
             <label
               className="block text-neutral-900 mb-2"
@@ -77,23 +73,16 @@ const SignUpForm = () => {
               className="w-full px-4 py-2 rounded-md bg-[#fcfdfb]  focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border border-[#9ca3af]"
             />
           </div>
-
           <button
             type="submit"
             className="w-full bg-[#379937] text-white font-bold py-2 px-4 rounded-lg transition-colors"
           >
             Sign Up
           </button>
-          <p className="text-black mb-10 max-w-md mt-3 flex justify-center items-center">
-            To create an account click {" "}
-            <a href="/Login.js" className="text-[#379937] underline ml-1 mr-1">
-              here
-            </a>{" "}
-          </p>
         </form>
       </div>
     </div>
   );
-};
+}
 
-export default SignUpForm;
+export default Login
