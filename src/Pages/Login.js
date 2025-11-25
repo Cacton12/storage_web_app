@@ -1,42 +1,103 @@
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from "react";
+
 const Login = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const token = sessionStorage.getItem("token");
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      navigate("/main", { replace: true });
+    } else {
+      setChecking(false);
+    }
+  }, [navigate]);
+
+  if (checking) return null;
+
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:5219/api/login", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Login failed");
+        setLoading(false);
+        return;
+      }
+
+      // Save JWT + user info
+      sessionStorage.setItem("token", data.token);
+      sessionStorage.setItem("user", JSON.stringify(data.user));
+
+      setSuccess("Login successful!");
+      navigate("/main");
+    } catch (err) {
+      setError("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    //leftside image
     <div className="h-screen w-full flex flex-col md:flex-row">
-      {/* Left side image */}
+      {/* Left side */}
       <div
-        className="h-1/2 md:h-full w-full md:w-1/2 flex flex-col justify-center items-center text-center p-10 relative"
+        className="h-1/2 md:h-full w-full md:w-1/2 flex flex-col justify-center items-center text-center p-10"
         style={{
-          backgroundImage: `url('/images/FoggyTrees.jpg')`,
+          backgroundImage: `url('/images/Valley.jpg')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
         <h1 className="text-4xl md:text-6xl font-bold text-neutral-800 mb-6">
-          Store Your Photos Safely
+          Welcome Back!
         </h1>
-        <p className="pb-20 md:pt-0 text-lg md:text-2xl text-white mb-10 max-w-md">
-          Keep your memories secure and organized. Sign up today and never lose
-          a photo again!
+        <p className="pb-20 text-lg md:text-2xl text-neutral-800 max-w-md">
+          Log in to securely access your photo collection.
         </p>
       </div>
 
-      {/* rightside signup */}
+      {/* Right side - Login */}
       <div className="h-full md:w-1/2 bg-[#f8f8f3] flex justify-center items-center">
-        <form className="w-3/4 max-w-md p-8">
+        <form className="w-3/4 max-w-md p-8" onSubmit={handleLogin}>
           <h2 className="text-2xl font-bold text-[#51803e] mb-6 text-center">
-            Sign Up
+            Log into your account
           </h2>
-          <div className="mb-4">
-            <label className="block text-neutral-900 mb-2" htmlFor="name">
-              Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              placeholder="Your Name"
-              className="w-full px-4 py-2 rounded-md bg-[#fcfdfb]  focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border border-[#9ca3af]"
-            />
-          </div>
+
+          {/* ERROR MESSAGE */}
+          {error && (
+            <p className="text-red-500 text-center mb-3">{error}</p>
+          )}
+
+          {/* SUCCESS MESSAGE */}
+          {success && (
+            <p className="text-green-600 text-center mb-3">{success}</p>
+          )}
+
           <div className="mb-4">
             <label className="block text-neutral-900 mb-2" htmlFor="email">
               Email
@@ -44,10 +105,13 @@ const Login = () => {
             <input
               type="email"
               id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full px-4 py-2 rounded-md bg-[#fcfdfb]  focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border border-[#9ca3af]"
+              className="w-full px-4 py-2 rounded-md bg-[#fcfdfb] border border-[#9ca3af] focus:ring-2 focus:ring-[#51803e]"
             />
           </div>
+
           <div className="mb-4">
             <label className="block text-neutral-900 mb-2" htmlFor="password">
               Password
@@ -55,34 +119,33 @@ const Login = () => {
             <input
               type="password"
               id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter password"
-              className="w-full px-4 py-2 rounded-md bg-[#fcfdfb]  focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border border-[#9ca3af]"
+              className="w-full px-4 py-2 rounded-md bg-[#fcfdfb] border border-[#9ca3af] focus:ring-2 focus:ring-[#51803e]"
             />
           </div>
-          <div className="mb-6">
-            <label
-              className="block text-neutral-900 mb-2"
-              htmlFor="confirm-password"
-            >
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              id="confirm-password"
-              placeholder="Confirm password"
-              className="w-full px-4 py-2 rounded-md bg-[#fcfdfb]  focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border border-[#9ca3af]"
-            />
-          </div>
+
+          {/* LOGIN BUTTON */}
           <button
             type="submit"
-            className="w-full bg-[#379937] text-white font-bold py-2 px-4 rounded-lg transition-colors"
+            disabled={loading}
+            className={`w-full bg-[#379937] text-white font-bold py-2 px-4 rounded-lg transition-all 
+             ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#2d7e2d] active:scale-95"}`}
           >
-            Sign Up
+            {loading ? "Logging in..." : "Log In"}
           </button>
+
+          <p className="pt-3 text-center">
+            Don't have an account?
+            <Link to="/signup" className="text-[#379937] px-1 font-semibold">
+              Sign up
+            </Link>
+          </p>
         </form>
       </div>
     </div>
   );
-}
+};
 
-export default Login
+export default Login;
