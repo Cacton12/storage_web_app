@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
 
 const SignUpForm = () => {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -70,7 +73,19 @@ const SignUpForm = () => {
 
   return (
     //leftside image
-    <div className="h-screen w-full flex flex-col md:flex-row">
+    <div className={`h-screen w-full flex flex-col md:flex-row ${theme === "dark" ? "bg-neutral-950" : "bg-neutral-100"}`}>
+      {/* Theme Toggle Button */}
+      <button
+        onClick={toggleTheme}
+        className="absolute top-6 right-6 z-50 p-3 rounded-full bg-neutral-200 dark:bg-neutral-800 hover:scale-110 transition-transform"
+        aria-label="Toggle theme"
+      >
+        {theme === "light" ? (
+          <Moon className="w-5 h-5 text-neutral-800" />
+        ) : (
+          <Sun className="w-5 h-5 text-yellow-400" />
+        )}
+      </button>
       {/* Left side image */}
       <div
         className="h-1/2 md:h-full w-full md:w-1/2 flex flex-col justify-center items-center text-center p-10 relative"
@@ -90,13 +105,13 @@ const SignUpForm = () => {
       </div>
 
       {/* rightside signup */}
-      <div className="h-full md:w-1/2 bg-[#f8f8f3] flex justify-center items-center">
+      <div className={`h-full md:w-1/2 ${theme === "dark" ? "bg-neutral-900" : "bg-[#f8f8f3]"} flex justify-center items-center`}>
         <form className="w-3/4 max-w-md p-8" onSubmit={handleSignUp}>
           <h2 className="text-2xl font-bold text-[#51803e] mb-6 text-center">
             Sign Up
           </h2>
           <div className="mb-4">
-            <label className="block text-neutral-900 mb-2" htmlFor="name">
+            <label className={`block mb-2 ${theme === "dark" ? "text-neutral-200" : "text-neutral-900"}`} htmlFor="name">
               Name
             </label>
             <input
@@ -105,11 +120,11 @@ const SignUpForm = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your Name"
-              className="w-full px-4 py-2 rounded-md bg-[#fcfdfb]  focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border border-[#9ca3af]"
+              className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border ${theme === "dark" ? "bg-neutral-800 border-neutral-700 text-white placeholder-neutral-400" : "bg-[#fcfdfb] border-[#9ca3af]"}`}
             />
           </div>
           <div className="mb-4">
-            <label className="block text-neutral-900 mb-2" htmlFor="email">
+            <label className={`block mb-2 ${theme === "dark" ? "text-neutral-200" : "text-neutral-900"}`} htmlFor="email">
               Email
             </label>
             <input
@@ -118,11 +133,11 @@ const SignUpForm = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full px-4 py-2 rounded-md bg-[#fcfdfb]  focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border border-[#9ca3af]"
+              className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border ${theme === "dark" ? "bg-neutral-800 border-neutral-700 text-white placeholder-neutral-400" : "bg-[#fcfdfb] border-[#9ca3af]"}`}
             />
           </div>
           <div className="mb-4">
-            <label className="block text-neutral-900 mb-2" htmlFor="password">
+            <label className={`block mb-2 ${theme === "dark" ? "text-neutral-200" : "text-neutral-900"}`} htmlFor="password">
               Password
             </label>
             <input
@@ -131,12 +146,12 @@ const SignUpForm = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter password"
-              className="w-full px-4 py-2 rounded-md bg-[#fcfdfb]  focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border border-[#9ca3af]"
+              className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border ${theme === "dark" ? "bg-neutral-800 border-neutral-700 text-white placeholder-neutral-400" : "bg-[#fcfdfb] border-[#9ca3af]"}`}
             />
           </div>
           <div className="mb-6">
             <label
-              className="block text-neutral-900 mb-2"
+              className={`block mb-2 ${theme === "dark" ? "text-neutral-200" : "text-neutral-900"}`}
               htmlFor="confirm-password"
             >
               Confirm Password
@@ -147,7 +162,7 @@ const SignUpForm = () => {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm password"
-              className="w-full px-4 py-2 rounded-md bg-[#fcfdfb]  focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border border-[#9ca3af]"
+              className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#51803e] placeholder-[#9ca3af] border ${theme === "dark" ? "bg-neutral-800 border-neutral-700 text-white placeholder-neutral-400" : "bg-[#fcfdfb] border-[#9ca3af]"}`}
             />
           </div>
           <button
@@ -162,10 +177,10 @@ const SignUpForm = () => {
           >
             {loading ? "Signing up..." : "Sign Up"}
           </button>
-          {error && <p className="text-red-500 mt-2">{error}</p>}
-          {success && <p className="text-green-500 mt-2">{success}</p>}
+          {error && <p className={`mt-2 ${theme === "dark" ? "text-red-400" : "text-red-500"}`}>{error}</p>}
+          {success && <p className={`mt-2 ${theme === "dark" ? "text-green-400" : "text-green-500"}`}>{success}</p>}
 
-          <p className="pt-3 flex justify-center items-center">
+          <p className={`pt-3 flex justify-center items-center ${theme === "dark" ? "text-neutral-300" : "text-neutral-900"}`}>
             Already have an account? click{" "}
             <Link to={"/"} className="text-[#379937] pl-1 pr-1">
               here
