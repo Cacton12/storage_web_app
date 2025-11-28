@@ -53,6 +53,7 @@ const ProfileDropdown = () => {
 
           {/* Menu Items */}
           <DropdownMenu.Item
+            onClick={() => navigate("/profile")}
             className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer outline-none ${
               theme === "dark" ? "text-neutral-200 hover:bg-neutral-700" : "text-neutral-800 hover:bg-neutral-100"
             }`}
@@ -60,25 +61,6 @@ const ProfileDropdown = () => {
             <User size={16} />
             My Profile
           </DropdownMenu.Item>
-
-          <DropdownMenu.Item
-            className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer outline-none ${
-              theme === "dark" ? "text-neutral-200 hover:bg-neutral-700" : "text-neutral-800 hover:bg-neutral-100"
-            }`}
-          >
-            <Bookmark size={16} />
-            Saved Collections
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Item
-            className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer outline-none ${
-              theme === "dark" ? "text-neutral-200 hover:bg-neutral-700" : "text-neutral-800 hover:bg-neutral-100"
-            }`}
-          >
-            <Share2 size={16} />
-            Share Gallery
-          </DropdownMenu.Item>
-
 
           <DropdownMenu.Item
             onClick={toggleTheme}
