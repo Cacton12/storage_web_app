@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, UploadCloud, X, ChevronLeft, ChevronRight } from "lucide-react";
 import ProfileDropdown from "../Components/DropDownMenuComponent";
@@ -9,23 +9,40 @@ export default function PhotoGallery() {
   const navigate = useNavigate();
   const { theme } = useTheme();
 
-  const [checking, setChecking] = useState(true); // Token check
-  const [loading, setLoading] = useState(true);   // Image loading
-  const [photos, setPhotos] = useState([]);       // Photo gallery
+  const [checking, setChecking] = useState(true); 
+  const [loading, setLoading] = useState(true);   
+  const [photos, setPhotos] = useState([]);       
   const [selectedPhoto, setSelectedPhoto] = useState(null);
-  const [user, setUser] = useState(null);         // Logged-in user
+  const [user, setUser] = useState(null);         
 
-  // Initial photos (can be replaced with API fetch)
-  const initialPhotos = useMemo(() => [
-    { id: 1, src: "/images/BridgeWaterFall.jpg", title: "Mountain View", desc: "A calm morning in the Rockies." },
-    { id: 2, src: "/images/FlowerMountains.jpg", title: "Forest Path", desc: "A peaceful walk among tall trees." },
-    { id: 3, src: "/images/FoggyTrees.jpg", title: "City Lights", desc: "Downtown glowing at night." },
-    { id: 4, src: "/images/MountiansDeer.jpg", title: "Ocean Sunset", desc: "Waves crashing under vibrant skies." },
-    { id: 5, src: "/images/ladyInHills.jpg", title: "Camping Trip", desc: "Cozy nights by the fire." },
-    { id: 6, src: "/images/Valley.jpg", title: "Snowy Trees", desc: "Fresh snow on pine branches." },
-  ], []);
+  // --------------------------------------
+  // Fetch photos from API
+  // --------------------------------------
+  const fetchUserPhotos = async (userId) => {
+    try {
+      const res = await fetch(`http://localhost:5219/api/images/user/${userId}`);
+      if (!res.ok) throw new Error("Failed to fetch images");
 
-  // Check user token and load initial photos
+      const data = await res.json();
+      // Map API response to photo objects for the gallery
+      const photoObjects = data.map((url, idx) => ({
+        id: idx + 1,
+        src: url,
+        title: `Photo ${idx + 1}`,
+        desc: "Uploaded by you"
+      }));
+
+      setPhotos(photoObjects);
+    } catch (err) {
+      console.error("Error fetching photos:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --------------------------------------
+  // Initial token & user check
+  // --------------------------------------
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     const userData = JSON.parse(sessionStorage.getItem("user"));
@@ -35,10 +52,14 @@ export default function PhotoGallery() {
     }
     setUser(userData);
     setChecking(false);
-    setPhotos(initialPhotos);
-  }, [navigate, initialPhotos]);
 
+    // Fetch the user's photos from API
+    fetchUserPhotos(userData.id);
+  }, [navigate]);
+
+  // --------------------------------------
   // Preload images
+  // --------------------------------------
   useEffect(() => {
     if (checking || photos.length === 0) return;
 
@@ -53,7 +74,9 @@ export default function PhotoGallery() {
     });
   }, [checking, photos]);
 
+  // --------------------------------------
   // Keyboard navigation for lightbox
+  // --------------------------------------
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!selectedPhoto) return;
@@ -66,25 +89,29 @@ export default function PhotoGallery() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedPhoto, photos]);
 
-  // Upload handler
+  // --------------------------------------
+  // Upload handler (no change needed)
+  // --------------------------------------
   const handleUpload = async (e) => {
     const file = e.target.files[0];
     if (!file || !user) return;
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", file, file.name);   
     formData.append("userId", user.id);
 
     try {
-      const res = await fetch("/api/upload/image", { method: "POST", body: formData });
-      const data = await res.json();
+      const res = await fetch("http://localhost:5219/api/upload/image", {
+        method: "POST",
+        body: formData,
+      });
 
-      if (res.ok && data.photoUrl) {
-        // Add new photo to gallery
-        setPhotos(prev => [
-          { id: Date.now(), src: data.photoUrl, title: file.name, desc: "Uploaded by you" },
-          ...prev
-        ]);
+      const data = await res.json();
+      console.log("Upload response:", data);
+
+      if (res.ok && data.photoKey) {
+        // After upload, fetch updated list from API
+        fetchUserPhotos(user.id);
       } else {
         console.error("Upload failed:", data);
       }
@@ -92,6 +119,8 @@ export default function PhotoGallery() {
       console.error("Upload error:", err);
     }
   };
+
+
 
   if (checking || loading) {
     return (

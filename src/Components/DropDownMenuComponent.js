@@ -1,5 +1,5 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { LogOut, User, Settings, Moon, Sun, Bookmark, HelpCircle, Share2 } from "lucide-react";
+import { LogOut, User, Settings, Moon, Sun, HelpCircle} from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 
