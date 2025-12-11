@@ -1,40 +1,43 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Search,
-  UploadCloud,
-  X,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { Search, UploadCloud, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
-
+import FeedbackBanner from "../Components/FeedbackBanner";
 import ProfileDropdown from "../Components/DropDownMenuComponent";
 import UploadModal from "../Components/UploadModal";
 import EditPhotoModal from "../Components/EditModal";
-import FeedbackBanner from "../Components/FeedbackBanner";
 
 export default function PhotoGallery() {
   const navigate = useNavigate();
   const { theme } = useTheme();
 
+  // ------------------------------
+  // State
+  // ------------------------------
   const [checking, setChecking] = useState(true);
   const [loading, setLoading] = useState(true);
   const [photos, setPhotos] = useState([]);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [user, setUser] = useState(null);
-
   const [bannerImage, setBannerImage] = useState(null);
 
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadTitle, setUploadTitle] = useState("");
   const [uploadDesc, setUploadDesc] = useState("");
-
   const [showEditModal, setShowEditModal] = useState(false);
-
   const [showFeedbackBanner, setShowFeedbackBanner] = useState(false);
+
+  // ------------------------------
+  // Check feedback URL param
+  // ------------------------------
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("feedbackSent") === "true") {
+      setShowFeedbackBanner(true);
+    }
+  }, []);
 
   // ------------------------------
   // Utility: Clean photo title
@@ -101,6 +104,7 @@ export default function PhotoGallery() {
       setPhotos((prev) =>
         prev.map((p) => (p.id === selectedPhoto.id ? { ...p, title, desc } : p))
       );
+
       setSelectedPhoto((prev) => ({ ...prev, title, desc }));
       setShowEditModal(false);
     } catch (err) {
@@ -109,45 +113,34 @@ export default function PhotoGallery() {
     }
   };
 
-// ------------------------------
-// Session check & fetch photos
-// ------------------------------
-useEffect(() => {
-  const token = sessionStorage.getItem("token");
-  const userData = JSON.parse(sessionStorage.getItem("user"));
+  // ------------------------------
+  // Session check + Fetch data
+  // ------------------------------
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    const userData = JSON.parse(sessionStorage.getItem("user"));
 
-  if (!token || !userData) {
-    navigate("/", { replace: true });
-    return;
-  }
+    if (!token || !userData) {
+      navigate("/", { replace: true });
+      return;
+    }
 
-  setUser(userData);
+    setUser(userData);
 
-  // Set banner
-  setBannerImage(
-    userData.banner
-      ? userData.banner
-      : theme === "dark"
-      ? "/image (1).png"
-      : "/image.png"
-  );
+    setBannerImage(
+      userData.banner
+        ? userData.banner
+        : theme === "dark"
+        ? "/image (1).png"
+        : "/image.png"
+    );
 
-  setChecking(false);
-  fetchUserPhotos(userData.id);
-
-  // Show feedback banner if redirected from feedback page
-  const feedbackFlag = sessionStorage.getItem("feedbackSent");
-  if (feedbackFlag === "true") {
-    setShowFeedbackBanner(true);
-    // Remove the flag after a short delay to avoid double-read issues in Strict Mode
-    setTimeout(() => {
-      sessionStorage.removeItem("feedbackSent");
-    }, 50);
-  }
-}, [navigate, fetchUserPhotos, theme]);
+    setChecking(false);
+    fetchUserPhotos(userData.id);
+  }, [navigate, fetchUserPhotos, theme]);
 
   // ------------------------------
-  // Keyboard navigation for lightbox
+  // Lightbox keyboard shortcuts
   // ------------------------------
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -166,7 +159,7 @@ useEffect(() => {
   }, [selectedPhoto, photos]);
 
   // ------------------------------
-  // Upload photo
+  // Upload Photo
   // ------------------------------
   const handleUpload = async () => {
     if (!uploadFile || !user) return;
@@ -216,7 +209,7 @@ useEffect(() => {
   };
 
   // ------------------------------
-  // Delete photo
+  // Delete Photo
   // ------------------------------
   const handleDelete = async () => {
     if (!selectedPhoto || !user) return;
@@ -241,7 +234,7 @@ useEffect(() => {
   };
 
   // ------------------------------
-  // Loading screen
+  // Loading Screen
   // ------------------------------
   if (checking || loading) {
     return (
@@ -261,31 +254,27 @@ useEffect(() => {
   // ------------------------------
   return (
     <div className={`min-h-screen flex flex-col ${theme === "dark" ? "bg-neutral-950" : "bg-neutral-100"}`}>
-      {/* Feedback Banner */}
-  <AnimatePresence>
-    {showFeedbackBanner ? (
-      <FeedbackBanner
-        key="feedback-banner" // important for AnimatePresence to animate properly
-        message="Thanks for your feedback!"
-        duration={4000}
-        onClose={() => setShowFeedbackBanner(false)}
-      />
-    ) : null}
-  </AnimatePresence>
-
       {/* Header */}
       <header
-        className={`w-full px-6 py-4 ${theme === "dark" ? "bg-neutral-900 border-neutral-800" : "bg-white"} shadow-md flex justify-between items-center sticky top-0 z-50 border-b`}
+        className={`w-full px-6 py-4 ${
+          theme === "dark" ? "bg-neutral-900 border-neutral-800" : "bg-white"
+        } shadow-md flex justify-between items-center sticky top-0 z-50 border-b`}
       >
         <h1 className="text-3xl font-bold text-[#379937]">MyGallery</h1>
         <div
-          className={`hidden md:flex items-center ${theme === "dark" ? "bg-neutral-800" : "bg-neutral-200"} px-4 py-2 rounded-xl w-96`}
+          className={`hidden md:flex items-center ${
+            theme === "dark" ? "bg-neutral-800" : "bg-neutral-200"
+          } px-4 py-2 rounded-xl w-96`}
         >
           <Search className="w-5 h-5 text-neutral-600" />
           <input
             type="text"
             placeholder="Search your photos..."
-            className={`ml-3 bg-transparent focus:outline-none w-full ${theme === "dark" ? "text-white placeholder-neutral-400" : "text-neutral-800"}`}
+            className={`ml-3 bg-transparent focus:outline-none w-full ${
+              theme === "dark"
+                ? "text-white placeholder-neutral-400"
+                : "text-neutral-800"
+            }`}
           />
         </div>
         <div className="flex gap-4 items-center">
@@ -302,8 +291,16 @@ useEffect(() => {
       {/* Hero Banner */}
       <section className="relative h-72 md:h-96 overflow-hidden flex items-center justify-center">
         {bannerImage === "/image.png" || bannerImage === "/image (1).png" ? (
-          <div className={`w-full h-full flex flex-col items-center justify-center ${theme === "dark" ? "bg-neutral-800" : "bg-neutral-300"}`}>
-            <div className={`flex items-center justify-center w-24 h-24 rounded-full ${theme === "dark" ? "bg-neutral-900" : "bg-neutral-400"}`}>
+          <div
+            className={`w-full h-full flex flex-col items-center justify-center ${
+              theme === "dark" ? "bg-neutral-800" : "bg-neutral-300"
+            }`}
+          >
+            <div
+              className={`flex items-center justify-center w-24 h-24 rounded-full ${
+                theme === "dark" ? "bg-neutral-900" : "bg-neutral-400"
+              }`}
+            >
               <svg
                 className="w-12 h-12"
                 aria-hidden="true"
@@ -313,23 +310,49 @@ useEffect(() => {
                 strokeWidth={2}
                 stroke={theme === "dark" ? "#a3a3a3" : "#ffffff"}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="m3 16 5-7 6 6.5m6.5 2.5L16 13l-4.286 6M14 10h.01M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"/>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m3 16 5-7 6 6.5m6.5 2.5L16 13l-4.286 6M14 10h.01M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"
+                />
               </svg>
             </div>
-            <p className={`mt-4 text-center text-lg md:text-xl ${theme === "dark" ? "text-neutral-300" : "text-neutral-900"}`}>
+            <p
+              className={`mt-4 text-center text-lg md:text-xl ${
+                theme === "dark" ? "text-neutral-300" : "text-neutral-900"
+              }`}
+            >
               No custom banner set. Go to your profile to upload one!
             </p>
           </div>
         ) : (
           <>
-            <img src={bannerImage} alt="Banner" className="w-full h-full object-cover" />
+            <img
+              src={bannerImage}
+              alt="Banner"
+              className="w-full h-full object-cover"
+            />
             <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center p-6">
-              <h2 className="text-4xl md:text-6xl font-bold text-white">{user?.name ? `${user.name}'s Memories.` : "Your Memories. Organized Beautifully."}</h2>
-              <p className="text-white text-lg md:text-xl mt-4 max-w-2xl">A clean and immersive way to store and view your photos.</p>
+              <h2 className="text-4xl md:text-6xl font-bold text-white">
+                {user?.name
+                  ? `${user.name}'s Memories.`
+                  : "Your Memories. Organized Beautifully."}
+              </h2>
+              <p className="text-white text-lg md:text-xl mt-4 max-w-2xl">
+                A clean and immersive way to store and view your photos.
+              </p>
             </div>
           </>
         )}
       </section>
+
+            {/* 🔔 Feedback Banner */}
+      <FeedbackBanner
+        message="Thanks for your feedback!"
+        show={showFeedbackBanner}
+        onClose={() => setShowFeedbackBanner(false)}
+        autoHide={4000}
+      />
 
       {/* Masonry Grid */}
       <main className="p-6">
@@ -339,13 +362,32 @@ useEffect(() => {
               key={photo.id}
               layout
               whileHover={{ scale: 1.02 }}
-              className={`mb-5 break-inside-avoid rounded-2xl overflow-hidden shadow-lg ${theme === "dark" ? "bg-neutral-800" : "bg-white"} hover:shadow-xl transition cursor-pointer`}
+              className={`mb-5 break-inside-avoid rounded-2xl overflow-hidden shadow-lg ${
+                theme === "dark" ? "bg-neutral-800" : "bg-white"
+              } hover:shadow-xl transition cursor-pointer`}
               onClick={() => setSelectedPhoto(photo)}
             >
-              <img src={photo.src} alt={photo.title} className="w-full h-auto object-cover" loading="lazy" />
+              <img
+                src={photo.src}
+                alt={photo.title}
+                className="w-full h-auto object-cover"
+                loading="lazy"
+              />
               <div className="p-4">
-                <p className={`font-bold text-lg ${theme === "dark" ? "text-white" : "text-neutral-900"}`}>{photo.title}</p>
-                <p className={`text-sm ${theme === "dark" ? "text-neutral-400" : "text-neutral-600"} mt-1`}>{photo.desc}</p>
+                <p
+                  className={`font-bold text-lg ${
+                    theme === "dark" ? "text-white" : "text-neutral-900"
+                  }`}
+                >
+                  {photo.title}
+                </p>
+                <p
+                  className={`text-sm ${
+                    theme === "dark" ? "text-neutral-400" : "text-neutral-600"
+                  } mt-1`}
+                >
+                  {photo.desc}
+                </p>
               </div>
             </motion.div>
           ))}
