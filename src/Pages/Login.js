@@ -34,7 +34,7 @@ const Login = () => {
     setSuccess("");
     setLoading(true);
     try {
-      const response = await fetch("api-proxy.colbyacton12.workers.dev/api/login", {
+      const response = await fetch("https://api-proxy.colbyacton12.workers.dev/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,7 +76,7 @@ const Login = () => {
         password: "demo",
       };
 
-      const response = await fetch("api-proxy.colbyacton12.workers.dev/api/login", {
+      const response = await fetch("https://api-proxy.colbyacton12.workers.dev/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(demoCredentials),
