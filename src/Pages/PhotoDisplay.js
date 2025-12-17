@@ -53,7 +53,7 @@ export const demoPhotosArray = [
     {
     id: 6,
     key: "demo6.jpg",
-    src: "/images/Mountiansdeer.jpg",
+    src: "/images/MountiansDeer.jpg",
     title: "Demo Photo 6",
     desc: "Uploaded by demo user",
     dateCreated: new Date().toISOString(),
