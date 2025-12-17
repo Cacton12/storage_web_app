@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
@@ -28,18 +28,17 @@ const Login = () => {
 
   if (checking) return null;
 
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5219/api/login", {
+      const response = await fetch("api-proxy.colbyacton12.workers.dev/api/login", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ email, password }),
       });
@@ -65,8 +64,53 @@ const Login = () => {
     }
   };
 
+  // Inside your Login component, add this function
+  const handleDemoLogin = async () => {
+    setError("");
+    setSuccess("");
+    setLoading(true);
+    try {
+      // Hardcoded demo credentials
+      const demoCredentials = {
+        email: "demo@demo.com",
+        password: "demo",
+      };
+
+      const response = await fetch("api-proxy.colbyacton12.workers.dev/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(demoCredentials),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Demo login failed");
+        setLoading(false);
+        return;
+      }
+
+      // Save JWT + user info
+      sessionStorage.setItem("token", data.token);
+      sessionStorage.setItem("user", JSON.stringify(data.user));
+      // Store as a boolean
+      sessionStorage.setItem("isDemo", JSON.stringify(true));
+
+      setSuccess("Demo login successful!");
+      navigate("/main");
+    } catch (err) {
+      setError("Something went wrong with demo login");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className={`h-screen w-full flex flex-col md:flex-row ${theme === "dark" ? "bg-neutral-950" : "bg-neutral-100"}`}>
+    <div
+      className={`h-screen w-full flex flex-col md:flex-row ${
+        theme === "dark" ? "bg-neutral-950" : "bg-neutral-100"
+      }`}
+    >
       {/* Theme Toggle Button */}
       <button
         onClick={toggleTheme}
@@ -97,16 +141,18 @@ const Login = () => {
       </div>
 
       {/* Right side - Login */}
-      <div className={`h-full md:w-1/2 ${theme === "dark" ? "bg-neutral-900" : "bg-[#f8f8f3]"} flex justify-center items-center`}>
+      <div
+        className={`h-full md:w-1/2 ${
+          theme === "dark" ? "bg-neutral-900" : "bg-[#f8f8f3]"
+        } flex justify-center items-center`}
+      >
         <form className="w-3/4 max-w-md p-8" onSubmit={handleLogin}>
           <h2 className="text-2xl font-bold text-[#51803e] mb-6 text-center">
             Log into your account
           </h2>
 
           {/* ERROR MESSAGE */}
-          {error && (
-            <p className="text-red-500 text-center mb-3">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-center mb-3">{error}</p>}
 
           {/* SUCCESS MESSAGE */}
           {success && (
@@ -114,7 +160,12 @@ const Login = () => {
           )}
 
           <div className="mb-4">
-            <label className={`block mb-2 ${theme === "dark" ? "text-neutral-200" : "text-neutral-900"}`} htmlFor="email">
+            <label
+              className={`block mb-2 ${
+                theme === "dark" ? "text-neutral-200" : "text-neutral-900"
+              }`}
+              htmlFor="email"
+            >
               Email
             </label>
             <input
@@ -123,12 +174,21 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className={`w-full px-4 py-2 rounded-md border focus:ring-2 focus:ring-[#51803e] ${theme === "dark" ? "bg-neutral-800 border-neutral-700 text-white placeholder-neutral-400" : "bg-[#fcfdfb] border-[#9ca3af]"}`}
+              className={`w-full px-4 py-2 rounded-md border focus:ring-2 focus:ring-[#51803e] ${
+                theme === "dark"
+                  ? "bg-neutral-800 border-neutral-700 text-white placeholder-neutral-400"
+                  : "bg-[#fcfdfb] border-[#9ca3af]"
+              }`}
             />
           </div>
 
           <div className="mb-4">
-            <label className={`block mb-2 ${theme === "dark" ? "text-neutral-200" : "text-neutral-900"}`} htmlFor="password">
+            <label
+              className={`block mb-2 ${
+                theme === "dark" ? "text-neutral-200" : "text-neutral-900"
+              }`}
+              htmlFor="password"
+            >
               Password
             </label>
             <input
@@ -137,7 +197,11 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter password"
-              className={`w-full px-4 py-2 rounded-md border focus:ring-2 focus:ring-[#51803e] ${theme === "dark" ? "bg-neutral-800 border-neutral-700 text-white placeholder-neutral-400" : "bg-[#fcfdfb] border-[#9ca3af]"}`}
+              className={`w-full px-4 py-2 rounded-md border focus:ring-2 focus:ring-[#51803e] ${
+                theme === "dark"
+                  ? "bg-neutral-800 border-neutral-700 text-white placeholder-neutral-400"
+                  : "bg-[#fcfdfb] border-[#9ca3af]"
+              }`}
             />
           </div>
 
@@ -146,9 +210,26 @@ const Login = () => {
             type="submit"
             disabled={loading}
             className={`w-full bg-[#379937] text-white font-bold py-2 px-4 rounded-lg transition-all 
-             ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#2d7e2d] active:scale-95"}`}
+             ${
+               loading
+                 ? "opacity-50 cursor-not-allowed"
+                 : "hover:bg-[#2d7e2d] active:scale-95"
+             }`}
           >
             {loading ? "Logging in..." : "Log In"}
+          </button>
+          <button
+            type="button"
+            onClick={handleDemoLogin}
+            disabled={loading}
+            className={`w-full mt-3 bg-[#3b82f6] text-white font-bold py-2 px-4 rounded-lg transition-all
+            ${
+              loading
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-[#2563eb] active:scale-95"
+            }`}
+          >
+            {loading ? "Logging in..." : "Demo Login"}
           </button>
 
           <p className="pt-3 text-center">

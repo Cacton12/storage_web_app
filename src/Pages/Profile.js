@@ -79,7 +79,7 @@ const Profile = () => {
     try {
       const token = sessionStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:5219/api/user/update/${user.email}`,
+        `api-proxy.colbyacton12.workers.dev/api/user/update/${user.email}`,
         {
           method: "PATCH",
           headers: {

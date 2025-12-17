@@ -2,6 +2,8 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { LogOut, User, Moon, Sun, MessageCircle} from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import { demoPhotosArray } from "../Pages/PhotoDisplay";
+
 
 const ProfileDropdown = ({ profileImage }) => {
   const navigate = useNavigate();
@@ -9,9 +11,14 @@ const ProfileDropdown = ({ profileImage }) => {
 
   const handleLogout = async (e) => {
     e.preventDefault();
+    console.log(demoPhotosArray);
     try {
-      sessionStorage.removeItem("token");
-      sessionStorage.removeItem("user");
+      if (JSON.parse(sessionStorage.getItem("isDemo"))) {
+        localStorage.setItem("demoPhotos", JSON.stringify(demoPhotosArray));
+        console.log("Demo photos saved to localStorage.");
+      }
+      console.log("Logging out...");
+      sessionStorage.clear();
     } catch (err) {
       console.log("Logout error:", err);
     }

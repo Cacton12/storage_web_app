@@ -21,7 +21,7 @@ const Feedback = () => {
     setSending(true);
 
     try {
-      const res = await fetch("http://localhost:5219/api/email/send-feedback", {
+      const res = await fetch("api-proxy.colbyacton12.workers.dev/api/email/send-feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, message }),
