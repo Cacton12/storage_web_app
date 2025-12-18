@@ -125,7 +125,7 @@ useEffect(() => {
   //fetch all the users photos 
   const fetchUserPhotos = useCallback(async (userId) => {
     try {
-      const res = await fetch(`api-proxy.colbyacton12.workers.dev/api/images/user/${userId}`);
+      const res = await fetch(`https://api-proxy.colbyacton12.workers.dev/api/images/user/${userId}`);
       if (!res.ok) throw new Error("Failed to fetch images");
       const data = await res.json();
       if (!data.images || !Array.isArray(data.images)) throw new Error("Invalid response format");
