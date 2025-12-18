@@ -2,7 +2,6 @@ import { useState } from "react";
 import { ArrowLeft, Mail, User, MessageCircle, Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
-import { i } from "framer-motion/client";
 
 const Feedback = () => {
   const navigate = useNavigate();
