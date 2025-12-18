@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import { event } from "@vercel/analytics/react"; // <-- import event
 
 const SignUpForm = () => {
   const navigate = useNavigate();
@@ -48,8 +49,6 @@ const SignUpForm = () => {
 
       const data = await response.json();
 
-      console.log(data);
-
       if (!response.ok) {
         setError(data.message || "Signup failed");
         setSuccess("");
@@ -62,6 +61,11 @@ const SignUpForm = () => {
       setLoading(false);
       setEmail("");
       setPassword("");
+      setConfirmPassword("");
+
+      // Track signup event
+      event("signup_success", { email: data.email, name: data.name });
+
       navigate('/main'); // Redirect to main page after successful signup
     } catch (err) {
       console.error(err);
@@ -72,7 +76,6 @@ const SignUpForm = () => {
   };
 
   return (
-    //leftside image
     <div className={`h-screen w-full flex flex-col md:flex-row ${theme === "dark" ? "bg-neutral-950" : "bg-neutral-100"}`}>
       {/* Theme Toggle Button */}
       <button
@@ -86,6 +89,7 @@ const SignUpForm = () => {
           <Sun className="w-5 h-5 text-yellow-400" />
         )}
       </button>
+
       {/* Left side image */}
       <div
         className="h-1/2 md:h-full w-full md:w-1/2 flex flex-col justify-center items-center text-center p-10 relative"
@@ -104,7 +108,7 @@ const SignUpForm = () => {
         </p>
       </div>
 
-      {/* rightside signup */}
+      {/* Right side signup */}
       <div className={`h-full md:w-1/2 ${theme === "dark" ? "bg-neutral-900" : "bg-[#f8f8f3]"} flex justify-center items-center`}>
         <form className="w-3/4 max-w-md p-8" onSubmit={handleSignUp}>
           <h2 className="text-2xl font-bold text-[#51803e] mb-6 text-center">
@@ -150,10 +154,7 @@ const SignUpForm = () => {
             />
           </div>
           <div className="mb-6">
-            <label
-              className={`block mb-2 ${theme === "dark" ? "text-neutral-200" : "text-neutral-900"}`}
-              htmlFor="confirm-password"
-            >
+            <label className={`block mb-2 ${theme === "dark" ? "text-neutral-200" : "text-neutral-900"}`} htmlFor="confirm-password">
               Confirm Password
             </label>
             <input
@@ -169,11 +170,7 @@ const SignUpForm = () => {
             type="submit"
             disabled={loading}
             className={`w-full text-white font-bold py-2 px-4 rounded-lg transition-transform 
-    ${
-      loading
-        ? "bg-gray-400 cursor-not-allowed animate-pulse"
-        : "bg-[#379937] hover:bg-[#2f7a2f] active:scale-95"
-    }`}
+              ${loading ? "bg-gray-400 cursor-not-allowed animate-pulse" : "bg-[#379937] hover:bg-[#2f7a2f] active:scale-95"}`}
           >
             {loading ? "Signing up..." : "Sign Up"}
           </button>

@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import { event } from "@vercel/analytics/react"; // <-- import event
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,7 +14,6 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const token = sessionStorage.getItem("token");
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
@@ -38,7 +37,7 @@ const Login = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
         body: JSON.stringify({ email, password }),
       });
@@ -56,6 +55,10 @@ const Login = () => {
       sessionStorage.setItem("user", JSON.stringify(data.user));
 
       setSuccess("Login successful!");
+      
+      // Track normal login event
+      event("login_success", { email });
+
       navigate("/main");
     } catch (err) {
       setError("Something went wrong");
@@ -64,13 +67,11 @@ const Login = () => {
     }
   };
 
-  // Inside your Login component, add this function
   const handleDemoLogin = async () => {
     setError("");
     setSuccess("");
     setLoading(true);
     try {
-      // Hardcoded demo credentials
       const demoCredentials = {
         email: "demo@demo.com",
         password: "demo",
@@ -90,13 +91,15 @@ const Login = () => {
         return;
       }
 
-      // Save JWT + user info
       sessionStorage.setItem("token", data.token);
       sessionStorage.setItem("user", JSON.stringify(data.user));
-      // Store as a boolean
       sessionStorage.setItem("isDemo", JSON.stringify(true));
 
       setSuccess("Demo login successful!");
+
+      // Track demo login event
+      event("demo_login", { email: "demo@demo.com" });
+
       navigate("/main");
     } catch (err) {
       setError("Something went wrong with demo login");
@@ -123,6 +126,7 @@ const Login = () => {
           <Sun className="w-5 h-5 text-yellow-400" />
         )}
       </button>
+
       {/* Left side */}
       <div
         className="h-1/2 md:h-full w-full md:w-1/2 flex flex-col justify-center items-center text-center p-10"
@@ -151,21 +155,11 @@ const Login = () => {
             Log into your account
           </h2>
 
-          {/* ERROR MESSAGE */}
           {error && <p className="text-red-500 text-center mb-3">{error}</p>}
-
-          {/* SUCCESS MESSAGE */}
-          {success && (
-            <p className="text-green-600 text-center mb-3">{success}</p>
-          )}
+          {success && <p className="text-green-600 text-center mb-3">{success}</p>}
 
           <div className="mb-4">
-            <label
-              className={`block mb-2 ${
-                theme === "dark" ? "text-neutral-200" : "text-neutral-900"
-              }`}
-              htmlFor="email"
-            >
+            <label className={`block mb-2 ${theme === "dark" ? "text-neutral-200" : "text-neutral-900"}`} htmlFor="email">
               Email
             </label>
             <input
@@ -183,12 +177,7 @@ const Login = () => {
           </div>
 
           <div className="mb-4">
-            <label
-              className={`block mb-2 ${
-                theme === "dark" ? "text-neutral-200" : "text-neutral-900"
-              }`}
-              htmlFor="password"
-            >
+            <label className={`block mb-2 ${theme === "dark" ? "text-neutral-200" : "text-neutral-900"}`} htmlFor="password">
               Password
             </label>
             <input
@@ -205,28 +194,22 @@ const Login = () => {
             />
           </div>
 
-          {/* LOGIN BUTTON */}
           <button
             type="submit"
             disabled={loading}
-            className={`w-full bg-[#379937] text-white font-bold py-2 px-4 rounded-lg transition-all 
-             ${
-               loading
-                 ? "opacity-50 cursor-not-allowed"
-                 : "hover:bg-[#2d7e2d] active:scale-95"
-             }`}
+            className={`w-full bg-[#379937] text-white font-bold py-2 px-4 rounded-lg transition-all ${
+              loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#2d7e2d] active:scale-95"
+            }`}
           >
             {loading ? "Logging in..." : "Log In"}
           </button>
+
           <button
             type="button"
             onClick={handleDemoLogin}
             disabled={loading}
-            className={`w-full mt-3 bg-[#3b82f6] text-white font-bold py-2 px-4 rounded-lg transition-all
-            ${
-              loading
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-[#2563eb] active:scale-95"
+            className={`w-full mt-3 bg-[#3b82f6] text-white font-bold py-2 px-4 rounded-lg transition-all ${
+              loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#2563eb] active:scale-95"
             }`}
           >
             {loading ? "Logging in..." : "Demo Login"}
