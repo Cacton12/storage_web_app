@@ -79,7 +79,6 @@ const handleSave = async () => {
     setBannerFile(null);
     setProfileFile(null);
     sessionStorage.setItem("user", JSON.stringify(updatedUser));
-    alert("Profile updated locally (demo mode)");
     navigate("/main");
     return;
   }
