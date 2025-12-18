@@ -264,7 +264,7 @@ const handleUpload = () => {
   formData.append("title", uploadTitle);
   formData.append("desc", uploadDesc);
 
-  fetch("api-proxy.colbyacton12.workers.dev/api/upload/image", { method: "POST", body: formData })
+  fetch("https://api-proxy.colbyacton12.workers.dev/api/upload/image", { method: "POST", body: formData })
     .then((res) => res.json())
     .then((data) => {
       if (!data.photo) throw new Error("Upload failed");
@@ -305,7 +305,7 @@ const handleUpload = () => {
       return;
     }
 
-    fetch(`api-proxy.colbyacton12.workers.dev/api/edit/${selectedPhoto.id}`, {
+    fetch(`https://api-proxy.colbyacton12.workers.dev/api/edit/${selectedPhoto.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ UserId: user.id, Title: title, Desc: desc }),
@@ -339,7 +339,7 @@ const handleUpload = () => {
 
     const { id: photoId, key: photoKey } = selectedPhoto;
     const encodedKey = encodeURIComponent(photoKey);
-    fetch(`api-proxy.colbyacton12.workers.dev/api/delete?userId=${user.id}&photoId=${photoId}&photoKey=${encodedKey}`, { method: "DELETE" })
+    fetch(`https://api-proxy.colbyacton12.workers.dev/api/delete?userId=${user.id}&photoId=${photoId}&photoKey=${encodedKey}`, { method: "DELETE" })
       .then((res) => {
         if (!res.ok) throw new Error("Delete failed");
         const updated = photos.filter((p) => p.id !== photoId);
