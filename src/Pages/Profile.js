@@ -32,8 +32,16 @@ const Profile = () => {
     if (userData) {
       const parsedUser = JSON.parse(userData);
       setUser(parsedUser);
-      setBannerPreview(parsedUser.banner || null);
-      setProfilePreview(parsedUser.profileImage || null);
+      if (localStorage.getItem("demoBanner")) {
+        setBannerPreview(localStorage.getItem("demoBanner"));
+      } else {
+        setBannerPreview(parsedUser.banner || null);
+      }
+      if (localStorage.getItem("demoProfileImage")) {
+        setProfilePreview(localStorage.getItem("demoProfileImage"));
+      } else {
+        setProfilePreview(parsedUser.profileImage || null);
+      }
     }
     setLoading(false);
   }, [checkingToken]);
@@ -59,27 +67,78 @@ const Profile = () => {
     setProfilePreview(null);
   };
 
-  // Save changes
-  // Save changes
+const compressImage = (fileOrDataUrl, maxWidth = 300, maxHeight = 300, quality = 0.7) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+
+    if (typeof fileOrDataUrl === "string") {
+      img.src = fileOrDataUrl;
+    } else {
+      const reader = new FileReader();
+      reader.readAsDataURL(fileOrDataUrl);
+      reader.onload = (event) => (img.src = event.target.result);
+      reader.onerror = (err) => reject(err);
+    }
+
+    img.onload = () => {
+      let { width, height } = img;
+
+      // Maintain aspect ratio
+      if (width > height) {
+        if (width > maxWidth) {
+          height *= maxWidth / width;
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width *= maxHeight / height;
+          height = maxHeight;
+        }
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
+      resolve(compressedDataUrl);
+    };
+
+    img.onerror = (err) => reject(err);
+  });
+};
+
 const handleSave = async () => {
   if (!user?.email) return;
 
   const isDemo = sessionStorage.getItem("isDemo") === "true";
 
   if (isDemo) {
-    // Update locally in sessionStorage
-    const updatedUser = {
-      ...user,
-      name: user.name,
-      banner: bannerPreview,
-      profileImage: profilePreview,
-    };
+    try {
+      // Clear old profile image first
+      localStorage.removeItem("demoProfileImage");
 
-    setUser(updatedUser);
-    setBannerFile(null);
-    setProfileFile(null);
-    sessionStorage.setItem("user", JSON.stringify(updatedUser));
-    navigate("/main");
+      if (bannerPreview) localStorage.setItem("demoBanner", bannerPreview);
+      if (profilePreview) {
+        try {
+          localStorage.setItem("demoProfileImage", profilePreview);
+        } catch (err) {
+          if (err.name === "QuotaExceededError") {
+            console.warn("Quota exceeded, compressing profile image...");
+            const compressed = await compressImage(profilePreview);
+            localStorage.setItem("demoProfileImage", compressed);
+          } else {
+            throw err;
+          }
+        }
+      }
+      navigate("/main");
+    } catch (err) {
+      console.error("Failed to save demo images:", err);
+      alert("Failed to save demo images. Try a smaller profile picture.");
+    }
     return;
   }
 

@@ -415,7 +415,9 @@ return (
         >
           <UploadCloud className="w-5 h-5" /> Upload
         </button>
-        <ProfileDropdown profileImage={user?.profileImage || null} />
+        <ProfileDropdown
+            profileImage={localStorage.getItem("demoProfileImage") || user?.profileImage || null}
+          />
       </div>
     </header>
 
@@ -435,7 +437,7 @@ return (
         </div>
       ) : (
         <>
-          <img src={bannerImage} alt="Banner" className="w-full h-full object-cover" />
+          <img src={localStorage.getItem("demoBanner") || bannerImage} alt="Banner" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center p-6">
             <h2 className="text-4xl md:text-6xl font-bold text-white">
               {user?.name ? `${user.name}'s Memories` : "Your Memories. Organized Beautifully."}
