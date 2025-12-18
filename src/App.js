@@ -5,7 +5,6 @@ import PhotoDisplay from './Pages/PhotoDisplay';
 import Profile from './Pages/Profile';
 import FeedbackPage from './Pages/Feedback';
 import { ThemeProvider } from './context/ThemeContext';
-import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   return (
@@ -17,7 +16,6 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/feedback" element={<FeedbackPage />} />
       </Routes>
-      <Analytics />
     </ThemeProvider>
   );
 }
