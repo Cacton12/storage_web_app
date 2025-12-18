@@ -60,53 +60,76 @@ const Profile = () => {
   };
 
   // Save changes
-  const handleSave = async () => {
-    if (!user?.email) return;
+  // Save changes
+const handleSave = async () => {
+  if (!user?.email) return;
 
-    const formData = new FormData();
+  const isDemo = sessionStorage.getItem("isDemo") === "true";
 
-    // Banner
-    if (bannerFile) formData.append("bannerFile", bannerFile);
-    else if (bannerPreview === null) formData.append("removeBanner", "true");
+  if (isDemo) {
+    // Update locally in sessionStorage
+    const updatedUser = {
+      ...user,
+      name: user.name,
+      banner: bannerPreview,
+      profileImage: profilePreview,
+    };
 
-    // Profile
-    if (profileFile) formData.append("profileFile", profileFile);
-    else if (profilePreview === null) formData.append("removeProfile", "true");
+    setUser(updatedUser);
+    setBannerFile(null);
+    setProfileFile(null);
+    sessionStorage.setItem("user", JSON.stringify(updatedUser));
+    alert("Profile updated locally (demo mode)");
+    navigate("/main");
+    return;
+  }
 
-    // Name
-    if (user?.name) formData.append("name", user.name);
+  // Normal API update for non-demo users
+  const formData = new FormData();
 
-    try {
-      const token = sessionStorage.getItem("token");
-      const response = await fetch(
-        `https://api-proxy.colbyacton12.workers.dev/api/user/update/${user.email}`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: token ? `Bearer ${token}` : undefined,
-          },
-          body: formData,
-        }
-      );
+  // Banner
+  if (bannerFile) formData.append("bannerFile", bannerFile);
+  else if (bannerPreview === null) formData.append("removeBanner", "true");
 
-      const data = await response.json();
+  // Profile
+  if (profileFile) formData.append("profileFile", profileFile);
+  else if (profilePreview === null) formData.append("removeProfile", "true");
 
-      if (data.success) {
-        setUser(data.user);
-        setBannerPreview(data.user.banner || null);
-        setProfilePreview(data.user.profileImage || null);
-        setBannerFile(null);
-        setProfileFile(null);
-        sessionStorage.setItem("user", JSON.stringify(data.user));
-        navigate("/main");
-      } else {
-        alert("Failed to update profile: " + (data.error || "Unknown error"));
+  // Name
+  if (user?.name) formData.append("name", user.name);
+
+  try {
+    const token = sessionStorage.getItem("token");
+    const response = await fetch(
+      `https://api-proxy.colbyacton12.workers.dev/api/user/update/${user.email}`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
+        body: formData,
       }
-    } catch (err) {
-      console.error("Error updating profile:", err);
-      alert("An error occurred while updating profile");
+    );
+
+    const data = await response.json();
+
+    if (data.success) {
+      setUser(data.user);
+      setBannerPreview(data.user.banner || null);
+      setProfilePreview(data.user.profileImage || null);
+      setBannerFile(null);
+      setProfileFile(null);
+      sessionStorage.setItem("user", JSON.stringify(data.user));
+      navigate("/main");
+    } else {
+      alert("Failed to update profile: " + (data.error || "Unknown error"));
     }
-  };
+  } catch (err) {
+    console.error("Error updating profile:", err);
+    alert("An error occurred while updating profile");
+  }
+};
+
 
   if (checkingToken || loading) {
     return (
