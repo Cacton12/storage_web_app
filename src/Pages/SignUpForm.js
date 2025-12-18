@@ -33,7 +33,7 @@ const SignUpForm = () => {
         return;
       }
 
-      const response = await fetch("api-proxy.colbyacton12.workers.dev/api/signup", {
+      const response = await fetch("https://api-proxy.colbyacton12.workers.dev/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
