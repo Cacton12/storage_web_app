@@ -8,6 +8,7 @@ import ProfileDropdown from "../Components/DropDownMenuComponent";
 import UploadModal from "../Components/UploadModal";
 import EditPhotoModal from "../Components/EditModal";
 import { useLocation } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 
 export const demoPhotosArray = [
   {
@@ -125,7 +126,7 @@ useEffect(() => {
   //fetch all the users photos 
   const fetchUserPhotos = useCallback(async (userId) => {
     try {
-      const res = await fetch(`https://api-proxy.colbyacton12.workers.dev/api/images/user/${userId}`);
+      const res = await fetch(`${API_BASE_URL}/api/images/user/${userId}`);
       if (!res.ok) throw new Error("Failed to fetch images");
       const data = await res.json();
       if (!data.images || !Array.isArray(data.images)) throw new Error("Invalid response format");
@@ -146,43 +147,38 @@ useEffect(() => {
   }, []);
 
   // ------------------------------
-  // Initialize session and photos
-  // ------------------------------
+// Initialize session, user, banner, profile
+// ------------------------------
 useEffect(() => {
   const token = sessionStorage.getItem("token");
   const userData = JSON.parse(sessionStorage.getItem("user"));
   if (!token || !userData) return navigate("/", { replace: true });
 
   setUser(userData);
-  setBannerImage(userData.banner || (theme === "dark" ? "/image (1).png" : "/image.png"));
+
+  // Banner: sessionStorage > user object > default
+  const storedBanner = sessionStorage.getItem("bannerURL");
+  setBannerImage(storedBanner || userData.banner || (theme === "dark" ? "/image (1).png" : "/image.png"));
+
   setChecking(false);
 
   if (isDemo) {
-    console.log("Loading demo photos from localStorage");
     const stored = localStorage.getItem("demoPhotos");
     let photosToLoad = demoPhotosArray;
 
     if (stored) {
       const parsed = JSON.parse(stored);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        console.log("Demo photos found in localStorage");
-
-        // Filter out blob URLs
+        // Filter out invalid blob URLs
         photosToLoad = parsed.filter(photo => !photo.src.startsWith("blob:"));
-
-        // Optional: if all were blobs, fallback to defaults
         if (photosToLoad.length === 0) {
-          console.log("All localStorage photos were invalid, using defaults");
           photosToLoad = demoPhotosArray;
           localStorage.setItem("demoPhotos", JSON.stringify(demoPhotosArray));
         }
-
       } else {
-        console.log("LocalStorage demoPhotos empty, using defaults");
         localStorage.setItem("demoPhotos", JSON.stringify(demoPhotosArray));
       }
     } else {
-      console.log("No demo photos in localStorage, initializing with defaults");
       localStorage.setItem("demoPhotos", JSON.stringify(demoPhotosArray));
     }
 
@@ -194,7 +190,7 @@ useEffect(() => {
       setLoading(false);
     });
   }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [navigate, fetchUserPhotos, theme, isDemo]);
 
   // ------------------------------
@@ -264,7 +260,7 @@ const handleUpload = () => {
   formData.append("title", uploadTitle);
   formData.append("desc", uploadDesc);
 
-  fetch("https://api-proxy.colbyacton12.workers.dev/api/upload/image", { method: "POST", body: formData })
+  fetch(`${API_BASE_URL}/api/upload/image`, { method: "POST", body: formData })
     .then((res) => res.json())
     .then((data) => {
       if (!data.photo) throw new Error("Upload failed");
@@ -305,7 +301,7 @@ const handleUpload = () => {
       return;
     }
 
-    fetch(`https://api-proxy.colbyacton12.workers.dev/api/edit/${selectedPhoto.id}`, {
+    fetch(`${API_BASE_URL}/api/edit/${selectedPhoto.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ UserId: user.id, Title: title, Desc: desc }),
@@ -339,7 +335,7 @@ const handleUpload = () => {
 
     const { id: photoId, key: photoKey } = selectedPhoto;
     const encodedKey = encodeURIComponent(photoKey);
-    fetch(`https://api-proxy.colbyacton12.workers.dev/api/delete?userId=${user.id}&photoId=${photoId}&photoKey=${encodedKey}`, { method: "DELETE" })
+    fetch(`${API_BASE_URL}/api/delete?userId=${user.id}&photoId=${photoId}&photoKey=${encodedKey}`, { method: "DELETE" })
       .then((res) => {
         if (!res.ok) throw new Error("Delete failed");
         const updated = photos.filter((p) => p.id !== photoId);
@@ -415,40 +411,48 @@ return (
         >
           <UploadCloud className="w-5 h-5" /> Upload
         </button>
-        <ProfileDropdown
-            profileImage={localStorage.getItem("demoProfileImage") || user?.profileImage || null}
-          />
+<ProfileDropdown
+  profileImage={
+    sessionStorage.getItem("profileURL") || localStorage.getItem("demoProfileImage") || user?.profileImage || null
+  }
+/>
+
       </div>
     </header>
 
-    {/* Hero Banner */}
-    <section className="relative h-72 md:h-96 overflow-hidden flex items-center justify-center">
-      {bannerImage?.includes("image") ? (
-        <div className={`w-full h-full flex flex-col items-center justify-center ${theme === "dark" ? "bg-neutral-800" : "bg-neutral-300"}`}>
-          <div className={`flex items-center justify-center w-24 h-24 rounded-full ${theme === "dark" ? "bg-neutral-900" : "bg-neutral-400"}`}>
-            {/* Default Banner Icon */}
-            <svg className="w-12 h-12" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke={theme === "dark" ? "#a3a3a3" : "#ffffff"}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="m3 16 5-7 6 6.5m6.5 2.5L16 13l-4.286 6M14 10h.01M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"/>
-            </svg>
-          </div>
-          <p className={`mt-4 text-center text-lg md:text-xl ${theme === "dark" ? "text-neutral-300" : "text-neutral-900"}`}>
-            No custom banner set. Go to your profile to upload one!
-          </p>
-        </div>
-      ) : (
-        <>
-          <img src={localStorage.getItem("demoBanner") || bannerImage} alt="Banner" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center p-6">
-            <h2 className="text-4xl md:text-6xl font-bold text-white">
-              {user?.name ? `${user.name}'s Memories` : "Your Memories. Organized Beautifully."}
-            </h2>
-            <p className="text-white text-lg md:text-xl mt-4 max-w-2xl">
-              A clean and immersive way to store and view your photos.
-            </p>
-          </div>
-        </>
-      )}
-    </section>
+{/* Hero Banner */}
+<section className="relative h-72 md:h-96 overflow-hidden flex items-center justify-center">
+  {!((sessionStorage.getItem("bannerURL")) || bannerImage) ? (
+    <div className={`w-full h-full flex flex-col items-center justify-center ${theme === "dark" ? "bg-neutral-800" : "bg-neutral-300"}`}>
+      <div className={`flex items-center justify-center w-24 h-24 rounded-full ${theme === "dark" ? "bg-neutral-900" : "bg-neutral-400"}`}>
+        {/* Default Banner Icon */}
+        <svg className="w-12 h-12" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke={theme === "dark" ? "#a3a3a3" : "#ffffff"}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="m3 16 5-7 6 6.5m6.5 2.5L16 13l-4.286 6M14 10h.01M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"/>
+        </svg>
+      </div>
+      <p className={`mt-4 text-center text-lg md:text-xl ${theme === "dark" ? "text-neutral-300" : "text-neutral-900"}`}>
+        No custom banner set. Go to your profile to upload one!
+      </p>
+    </div>
+  ) : (
+    <>
+      <img
+        src={sessionStorage.getItem("bannerURL") || bannerImage}
+        alt="Banner"
+        className="w-full h-full object-cover"
+      />
+      <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center p-6">
+        <h2 className="text-4xl md:text-6xl font-bold text-white">
+          {user?.name ? `${user.name}'s Memories` : "Your Memories. Organized Beautifully."}
+        </h2>
+        <p className="text-white text-lg md:text-xl mt-4 max-w-2xl">
+          A clean and immersive way to store and view your photos.
+        </p>
+      </div>
+    </>
+  )}
+</section>
+
 
     {/* Feedback Banner */}
     <FeedbackBanner
