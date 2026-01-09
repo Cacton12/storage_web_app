@@ -8,6 +8,7 @@ import { demoPhotosArray } from "../Pages/PhotoDisplay";
 const ProfileDropdown = ({ profileImage }) => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const user = JSON.parse(sessionStorage.getItem("user") || "{}");
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -26,6 +27,7 @@ const ProfileDropdown = ({ profileImage }) => {
     }
     navigate("/");
   };
+  
 
   return (
     <DropdownMenu.Root>
@@ -71,8 +73,8 @@ const ProfileDropdown = ({ profileImage }) => {
         >
           {/* Profile Header */}
           <div className={`px-3 py-2 border-b ${theme === "dark" ? "border-neutral-700" : "border-neutral-200"}`}>
-            <p className={`font-semibold ${theme === "dark" ? "text-neutral-200" : "text-neutral-800"}`}>Colby Acton</p>
-            <p className={`text-sm ${theme === "dark" ? "text-neutral-400" : "text-neutral-500"}`}>colby@example.com</p>
+            <p className={`font-semibold ${theme === "dark" ? "text-neutral-200" : "text-neutral-800"}`}>{user.name}</p>
+            <p className={`text-sm ${theme === "dark" ? "text-neutral-400" : "text-neutral-500"}`}>{user.email}</p>
           </div>
 
           {/* Menu Items */}
