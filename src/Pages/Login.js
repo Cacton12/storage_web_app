@@ -1,23 +1,31 @@
+// src/Pages/Login.jsx
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, AlertCircle, WifiOff } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
-import { API_BASE_URL } from "../config";
+import apiClient from "../utils/apiClient";
+import { validateLoginForm } from "../utils/validation";
+import { getUserFriendlyMessage, isAuthError } from "../utils/apiErrorHandler";
 
 const Login = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  
+  // Form state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  
+  // UI state
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const token = sessionStorage.getItem("token");
   const [checking, setChecking] = useState(true);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [attemptCount, setAttemptCount] = useState(0);
 
+  // Check if user is already logged in
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (token) {
@@ -27,80 +35,141 @@ const Login = () => {
     }
   }, [navigate]);
 
+  // Monitor network status
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      setError("");
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+      setError("You are currently offline. Please check your internet connection.");
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Clear error after 5 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(""), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  // Clear success after 2 seconds
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(""), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
   if (checking) return null;
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    
+    // Reset states
     setError("");
     setSuccess("");
+    setFieldErrors({});
+
+    // Check network
+    if (!isOnline) {
+      setError("You are offline. Please check your internet connection.");
+      return;
+    }
+
+    // Validate form
+    const validation = validateLoginForm(email.trim(), password);
+    if (!validation.isValid) {
+      setFieldErrors(validation.errors);
+      setError("Please correct the errors below.");
+      return;
+    }
+
+    // Rate limiting check (simple client-side)
+    if (attemptCount >= 5) {
+      setError("Too many login attempts. Please wait a moment before trying again.");
+      setTimeout(() => setAttemptCount(0), 60000); // Reset after 1 minute
+      return;
+    }
+
     setLoading(true);
+
     try {
-      const response = await fetch(`${API_BASE_URL}/api/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ email, password }),
+      const data = await apiClient.post("/api/login", {
+        email: email.trim().toLowerCase(),
+        password: password
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message || "Login failed");
-        setLoading(false);
-        return;
-      }
-
-      // Save JWT + user info
-      sessionStorage.setItem("token", data.token);
+      // Save auth data
+      apiClient.setToken(data.token);
       sessionStorage.setItem("user", JSON.stringify(data.user));
 
-      setSuccess("Login successful!");
-      navigate("/main");
+      setSuccess("Login successful! Redirecting...");
+      setAttemptCount(0);
+      
+      // Small delay for success message
+      setTimeout(() => {
+        navigate("/main", { replace: true });
+      }, 500);
+
     } catch (err) {
-      setError("Something went wrong");
+      setAttemptCount(prev => prev + 1);
+      
+      // Handle different error types
+      if (isAuthError(err)) {
+        setError("Invalid email or password. Please try again.");
+        setFieldErrors({ 
+          email: " ",
+          password: " "
+        });
+      } else {
+        setError(getUserFriendlyMessage(err));
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  // Inside your Login component, add this function
   const handleDemoLogin = async () => {
     setError("");
     setSuccess("");
-    setLoading(true);
-    try {
-      // Hardcoded demo credentials
-      const demoCredentials = {
-        email: "demo@demo.com",
-        password: "demo",
-      };
+    setFieldErrors({});
 
-      const response = await fetch(`${API_BASE_URL}/api/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(demoCredentials),
+    if (!isOnline) {
+      setError("You are offline. Please check your internet connection.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const data = await apiClient.post("/api/login", {
+        email: "demo@demo.com",
+        password: "demo"
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message || "Demo login failed");
-        setLoading(false);
-        return;
-      }
-
-      // Save JWT + user info
-      sessionStorage.setItem("token", data.token);
+      apiClient.setToken(data.token);
       sessionStorage.setItem("user", JSON.stringify(data.user));
-      // Store as a boolean
       sessionStorage.setItem("isDemo", JSON.stringify(true));
 
-      setSuccess("Demo login successful!");
-      navigate("/main");
+      setSuccess("Demo login successful! Redirecting...");
+      
+      setTimeout(() => {
+        navigate("/main", { replace: true });
+      }, 500);
+
     } catch (err) {
-      setError("Something went wrong with demo login");
+      setError(getUserFriendlyMessage(err));
     } finally {
       setLoading(false);
     }
@@ -112,6 +181,14 @@ const Login = () => {
         theme === "dark" ? "bg-neutral-950" : "bg-neutral-100"
       }`}
     >
+      {/* Network Status Indicator */}
+      {!isOnline && (
+        <div className="absolute top-0 left-0 right-0 bg-red-600 text-white py-2 px-4 flex items-center justify-center gap-2 z-50">
+          <WifiOff className="w-4 h-4" />
+          <span className="text-sm">No internet connection</span>
+        </div>
+      )}
+
       {/* Theme Toggle Button */}
       <button
         onClick={toggleTheme}
@@ -119,11 +196,12 @@ const Login = () => {
         aria-label="Toggle theme"
       >
         {theme === "light" ? (
-          <Moon className="w-5 h-5 text-neutral-100" />
+          <Moon className="w-5 h-5 text-neutral-800" />
         ) : (
           <Sun className="w-5 h-5 text-yellow-400" />
         )}
       </button>
+
       {/* Left side */}
       <div
         className="h-1/2 md:h-full w-full md:w-1/2 flex flex-col justify-center items-center text-center p-10"
@@ -145,19 +223,26 @@ const Login = () => {
       <div
         className={`h-full md:w-1/2 ${
           theme === "dark" ? "bg-neutral-900" : "bg-[#f8f8f3]"
-        } flex justify-center items-center`}
+        } flex justify-center items-center overflow-y-auto`}
       >
-        <form className="w-3/4 max-w-md p-8" onSubmit={handleLogin}>
+        <div className="w-3/4 max-w-md p-8">
           <h2 className="text-2xl font-bold text-[#51803e] mb-6 text-center">
             Log into your account
           </h2>
 
           {/* ERROR MESSAGE */}
-          {error && <p className="text-red-500 text-center mb-3">{error}</p>}
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-800 rounded-lg flex items-start gap-2">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+            </div>
+          )}
 
           {/* SUCCESS MESSAGE */}
           {success && (
-            <p className="text-green-600 text-center mb-3">{success}</p>
+            <div className="mb-4 p-3 bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-800 rounded-lg">
+              <p className="text-sm text-green-700 dark:text-green-300">{success}</p>
+            </div>
           )}
 
           <div className="mb-4">
@@ -173,17 +258,28 @@ const Login = () => {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setFieldErrors(prev => ({ ...prev, email: "" }));
+              }}
               placeholder="you@example.com"
-              className={`w-full px-4 py-2 rounded-md border focus:ring-2 focus:ring-[#51803e] ${
-                theme === "dark"
+              disabled={loading}
+              className={`w-full px-4 py-2 rounded-md border focus:ring-2 focus:ring-[#51803e] focus:outline-none ${
+                fieldErrors.email
+                  ? "border-red-500 focus:ring-red-500"
+                  : theme === "dark"
                   ? "bg-neutral-800 border-neutral-700 text-white placeholder-neutral-400"
                   : "bg-[#fcfdfb] border-[#9ca3af]"
-              }`}
+              } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             />
+            {fieldErrors.email && (
+              <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                {fieldErrors.email}
+              </p>
+            )}
           </div>
 
-          <div className="mb-4">
+          <div className="mb-6">
             <label
               className={`block mb-2 ${
                 theme === "dark" ? "text-neutral-200" : "text-neutral-900"
@@ -196,36 +292,50 @@ const Login = () => {
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setFieldErrors(prev => ({ ...prev, password: "" }));
+              }}
               placeholder="Enter password"
-              className={`w-full px-4 py-2 rounded-md border focus:ring-2 focus:ring-[#51803e] ${
-                theme === "dark"
+              disabled={loading}
+              className={`w-full px-4 py-2 rounded-md border focus:ring-2 focus:ring-[#51803e] focus:outline-none ${
+                fieldErrors.password
+                  ? "border-red-500 focus:ring-red-500"
+                  : theme === "dark"
                   ? "bg-neutral-800 border-neutral-700 text-white placeholder-neutral-400"
                   : "bg-[#fcfdfb] border-[#9ca3af]"
-              }`}
+              } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             />
+            {fieldErrors.password && (
+              <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                {fieldErrors.password}
+              </p>
+            )}
           </div>
 
           {/* LOGIN BUTTON */}
           <button
-            type="submit"
-            disabled={loading}
+            type="button"
+            onClick={handleLogin}
+            disabled={loading || !isOnline}
             className={`w-full bg-[#379937] text-white font-bold py-2 px-4 rounded-lg transition-all 
              ${
-               loading
+               loading || !isOnline
                  ? "opacity-50 cursor-not-allowed"
                  : "hover:bg-[#2d7e2d] active:scale-95"
              }`}
           >
             {loading ? "Logging in..." : "Log In"}
           </button>
+
+          {/* DEMO LOGIN BUTTON */}
           <button
             type="button"
             onClick={handleDemoLogin}
-            disabled={loading}
+            disabled={loading || !isOnline}
             className={`w-full mt-3 bg-[#3b82f6] text-white font-bold py-2 px-4 rounded-lg transition-all
             ${
-              loading
+              loading || !isOnline
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:bg-[#2563eb] active:scale-95"
             }`}
@@ -233,13 +343,13 @@ const Login = () => {
             {loading ? "Logging in..." : "Demo Login"}
           </button>
 
-          <p className="pt-3 text-center">
+          <p className={`pt-3 text-center ${theme === "dark" ? "text-neutral-300" : "text-neutral-700"}`}>
             Don't have an account?
-            <Link to="/signup" className="text-[#379937] px-1 font-semibold">
+            <Link to="/signup" className="text-[#379937] px-1 font-semibold hover:underline">
               Sign up
             </Link>
           </p>
-        </form>
+        </div>
       </div>
     </div>
   );

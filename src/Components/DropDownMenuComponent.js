@@ -17,7 +17,7 @@ const ProfileDropdown = ({ profileImage }) => {
       if (JSON.parse(sessionStorage.getItem("isDemo"))) {
         localStorage.clear("demoBanner");
         localStorage.clear("demoProfileImage");
-        localStorage.setItem("demoPhotos", JSON.stringify(demoPhotosArray));
+        localStorage.removeItem("demoPhotos");
         console.log("Demo photos saved to localStorage.");
       }
       console.log("Logging out...");
