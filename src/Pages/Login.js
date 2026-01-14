@@ -176,181 +176,217 @@ const Login = () => {
   };
 
   return (
-    <div
-      className={`h-screen w-full flex flex-col md:flex-row ${
-        theme === "dark" ? "bg-neutral-950" : "bg-neutral-100"
-      }`}
-    >
+    <div className={`min-h-screen w-full ${theme === "dark" ? "bg-neutral-950" : "bg-neutral-100"}`}>
       {/* Network Status Indicator */}
       {!isOnline && (
-        <div className="absolute top-0 left-0 right-0 bg-red-600 text-white py-2 px-4 flex items-center justify-center gap-2 z-50">
-          <WifiOff className="w-4 h-4" />
-          <span className="text-sm">No internet connection</span>
+        <div className="fixed top-0 left-0 right-0 bg-red-600 text-white py-2 px-4 flex items-center justify-center gap-2 text-sm z-50">
+          <WifiOff className="w-4 h-4 flex-shrink-0" />
+          <span>No internet connection</span>
         </div>
       )}
 
-      {/* Theme Toggle Button */}
-      <button
-        onClick={toggleTheme}
-        className="absolute top-6 right-6 z-50 p-3 rounded-full bg-neutral-200 dark:bg-neutral-800 hover:scale-110 transition-transform"
-        aria-label="Toggle theme"
-      >
-        {theme === "light" ? (
-          <Moon className="w-5 h-5 text-neutral-200" />
-        ) : (
-          <Sun className="w-5 h-5 text-yellow-400" />
-        )}
-      </button>
-
-      {/* Left side */}
-      <div
-        className="h-1/2 md:h-full w-full md:w-1/2 flex flex-col justify-center items-center text-center p-10"
-        style={{
-          backgroundImage: `url('/images/Valley.jpg')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <h1 className="text-4xl md:text-6xl font-bold text-neutral-800 mb-6">
-          Welcome Back!
-        </h1>
-        <p className="pb-20 text-lg md:text-2xl text-neutral-800 max-w-md">
-          Log in to securely access your photo collection.
-        </p>
-      </div>
-
-      {/* Right side - Login */}
-      <div
-        className={`h-full md:w-1/2 ${
-          theme === "dark" ? "bg-neutral-900" : "bg-[#f8f8f3]"
-        } flex justify-center items-center overflow-y-auto`}
-      >
-        <div className="w-3/4 max-w-md p-8">
-          <h2 className="text-2xl font-bold text-[#51803e] mb-6 text-center">
-            Log into your account
-          </h2>
-
-          {/* ERROR MESSAGE */}
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-800 rounded-lg flex items-start gap-2">
-              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
-            </div>
-          )}
-
-          {/* SUCCESS MESSAGE */}
-          {success && (
-            <div className="mb-4 p-3 bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-800 rounded-lg">
-              <p className="text-sm text-green-700 dark:text-green-300">{success}</p>
-            </div>
-          )}
-
-          <div className="mb-4">
-            <label
-              className={`block mb-2 ${
-                theme === "dark" ? "text-neutral-200" : "text-neutral-900"
-              }`}
-              htmlFor="email"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setFieldErrors(prev => ({ ...prev, email: "" }));
-              }}
-              placeholder="you@example.com"
-              disabled={loading}
-              className={`w-full px-4 py-2 rounded-md border focus:ring-2 focus:ring-[#51803e] focus:outline-none ${
-                fieldErrors.email
-                  ? "border-red-500 focus:ring-red-500"
-                  : theme === "dark"
-                  ? "bg-neutral-800 border-neutral-700 text-white placeholder-neutral-400"
-                  : "bg-[#fcfdfb] border-[#9ca3af]"
-              } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-            />
-            {fieldErrors.email && (
-              <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-                {fieldErrors.email}
-              </p>
-            )}
-          </div>
-
-          <div className="mb-6">
-            <label
-              className={`block mb-2 ${
-                theme === "dark" ? "text-neutral-200" : "text-neutral-900"
-              }`}
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setFieldErrors(prev => ({ ...prev, password: "" }));
-              }}
-              placeholder="Enter password"
-              disabled={loading}
-              className={`w-full px-4 py-2 rounded-md border focus:ring-2 focus:ring-[#51803e] focus:outline-none ${
-                fieldErrors.password
-                  ? "border-red-500 focus:ring-red-500"
-                  : theme === "dark"
-                  ? "bg-neutral-800 border-neutral-700 text-white placeholder-neutral-400"
-                  : "bg-[#fcfdfb] border-[#9ca3af]"
-              } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-            />
-            {fieldErrors.password && (
-              <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-                {fieldErrors.password}
-              </p>
-            )}
-          </div>
-
-          {/* LOGIN BUTTON */}
-          <button
-            type="button"
-            onClick={handleLogin}
-            disabled={loading || !isOnline}
-            className={`w-full bg-[#379937] text-white font-bold py-2 px-4 rounded-lg transition-all 
-             ${
-               loading || !isOnline
-                 ? "opacity-50 cursor-not-allowed"
-                 : "hover:bg-[#2d7e2d] active:scale-95"
-             }`}
-          >
-            {loading ? "Logging in..." : "Log In"}
-          </button>
-
-          {/* DEMO LOGIN BUTTON */}
-          <button
-            type="button"
-            onClick={handleDemoLogin}
-            disabled={loading || !isOnline}
-            className={`w-full mt-3 bg-[#3b82f6] text-white font-bold py-2 px-4 rounded-lg transition-all
-            ${
-              loading || !isOnline
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-[#2563eb] active:scale-95"
-            }`}
-          >
-            {loading ? "Logging in..." : "Demo Login"}
-          </button>
-
-          <p className={`pt-3 text-center ${theme === "dark" ? "text-neutral-300" : "text-neutral-700"}`}>
-            Don't have an account?
-            <Link to="/signup" className="text-[#379937] px-1 font-semibold hover:underline">
-              Sign up
-            </Link>
+      <div className="flex flex-col lg:flex-row min-h-screen">
+        {/* Left side - Hero Image (hidden on mobile) */}
+        <div
+          className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center text-center p-10 lg:p-16"
+          style={{
+            backgroundImage: `url('/images/Valley.jpg')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          <h1 className="text-5xl xl:text-6xl font-bold text-neutral-800 mb-6">
+            Welcome Back!
+          </h1>
+          <p className="text-xl xl:text-2xl text-neutral-800 max-w-lg">
+            Log in to securely access your photo collection.
           </p>
         </div>
+
+        {/* Right side - Login Form */}
+        <div className={`relative w-full lg:w-1/2 flex justify-center items-center ${theme === "dark" ? "bg-neutral-900" : "bg-[#f8f8f3]"} min-h-screen`}>
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className={`fixed top-4 right-4 lg:absolute lg:top-6 lg:right-6 z-40 p-2.5 rounded-full hover:scale-110 transition-all shadow-lg ${
+              theme === "light" 
+                ? "bg-neutral-200 hover:bg-neutral-300" 
+                : "bg-neutral-800 hover:bg-neutral-700"
+            }`}
+            aria-label="Toggle theme"
+          >
+            {theme === "light" ? (
+              <Moon className="w-5 h-5 text-neutral-800" />
+            ) : (
+              <Sun className="w-5 h-5 text-yellow-400" />
+            )}
+          </button>
+
+          {/* Login Form Container */}
+          <div className="w-full max-w-md px-6 py-8 sm:px-8 lg:px-6">
+            {/* Mobile Header (only shown on mobile) */}
+            <div className="lg:hidden mb-8 text-center">
+              <h1 className="text-3xl font-bold text-[#51803e] mb-2">
+                Welcome Back!
+              </h1>
+              <p className={`text-sm ${theme === "dark" ? "text-neutral-400" : "text-neutral-600"}`}>
+                Log in to access your photos
+              </p>
+            </div>
+
+            <h2 className="text-2xl lg:text-3xl font-bold text-[#51803e] mb-6 text-center">
+              Log in to your account
+            </h2>
+
+            {/* ERROR MESSAGE */}
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-800 rounded-lg flex items-start gap-2 animate-shake">
+                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+              </div>
+            )}
+
+            {/* SUCCESS MESSAGE */}
+            {success && (
+              <div className="mb-4 p-3 bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-800 rounded-lg animate-fadeIn">
+                <p className="text-sm text-green-700 dark:text-green-300">{success}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              {/* Email Input */}
+              <div>
+                <label
+                  className={`block mb-2 text-sm font-medium ${
+                    theme === "dark" ? "text-neutral-200" : "text-neutral-900"
+                  }`}
+                  htmlFor="email"
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setFieldErrors(prev => ({ ...prev, email: "" }));
+                  }}
+                  placeholder="you@example.com"
+                  disabled={loading}
+                  className={`w-full px-4 py-3 rounded-lg text-base border focus:ring-2 focus:ring-[#51803e] focus:outline-none transition-all ${
+                    fieldErrors.email
+                      ? "border-red-500 focus:ring-red-500"
+                      : theme === "dark"
+                      ? "bg-neutral-800 border-neutral-700 text-white placeholder-neutral-400"
+                      : "bg-[#fcfdfb] border-[#9ca3af]"
+                  } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                />
+                {fieldErrors.email && (
+                  <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                    {fieldErrors.email}
+                  </p>
+                )}
+              </div>
+
+              {/* Password Input */}
+              <div>
+                <label
+                  className={`block mb-2 text-sm font-medium ${
+                    theme === "dark" ? "text-neutral-200" : "text-neutral-900"
+                  }`}
+                  htmlFor="password"
+                >
+                  Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setFieldErrors(prev => ({ ...prev, password: "" }));
+                  }}
+                  placeholder="Enter password"
+                  disabled={loading}
+                  className={`w-full px-4 py-3 rounded-lg text-base border focus:ring-2 focus:ring-[#51803e] focus:outline-none transition-all ${
+                    fieldErrors.password
+                      ? "border-red-500 focus:ring-red-500"
+                      : theme === "dark"
+                      ? "bg-neutral-800 border-neutral-700 text-white placeholder-neutral-400"
+                      : "bg-[#fcfdfb] border-[#9ca3af]"
+                  } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                />
+                {fieldErrors.password && (
+                  <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                    {fieldErrors.password}
+                  </p>
+                )}
+              </div>
+
+              {/* LOGIN BUTTON */}
+              <button
+                type="submit"
+                disabled={loading || !isOnline}
+                className={`w-full bg-[#379937] text-white font-bold py-3 px-4 rounded-lg text-base transition-all ${
+                  loading || !isOnline
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-[#2d7e2d] active:scale-[0.98] shadow-md hover:shadow-lg"
+                }`}
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Logging in...
+                  </span>
+                ) : (
+                  "Log In"
+                )}
+              </button>
+
+              {/* DEMO LOGIN BUTTON */}
+              <button
+                type="button"
+                onClick={handleDemoLogin}
+                disabled={loading || !isOnline}
+                className={`w-full bg-[#3b82f6] text-white font-bold py-3 px-4 rounded-lg text-base transition-all ${
+                  loading || !isOnline
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-[#2563eb] active:scale-[0.98] shadow-md hover:shadow-lg"
+                }`}
+              >
+                {loading ? "Logging in..." : "Demo Login"}
+              </button>
+            </form>
+
+            {/* Sign Up Link */}
+            <p className={`mt-6 text-sm text-center ${theme === "dark" ? "text-neutral-300" : "text-neutral-700"}`}>
+              Don't have an account?{" "}
+              <Link to="/signup" className="text-[#379937] font-semibold hover:underline">
+                Sign up
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
+
+      <style jsx>{`
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-shake {
+          animation: shake 0.3s ease-in-out;
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-in-out;
+        }
+      `}</style>
     </div>
   );
 };

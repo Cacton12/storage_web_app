@@ -33,14 +33,14 @@ const UploadModal = ({
     <AnimatePresence>
     {showUploadModal && (
       <motion.div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[999]"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[999] p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={() => setShowUploadModal(false)}
       >
         <motion.div
-          className={`w-full max-w-lg rounded-2xl shadow-xl p-6 ${
+          className={`w-full max-w-lg rounded-2xl shadow-xl p-4 sm:p-6 ${
             theme === "dark" ? "bg-neutral-900" : "bg-white"
           }`}
           initial={{ scale: 0.8, opacity: 0 }}
@@ -52,7 +52,7 @@ const UploadModal = ({
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
             <h2
-              className={`text-2xl font-bold ${
+              className={`text-xl sm:text-2xl font-bold ${
                 theme === "dark" ? "text-white" : "text-neutral-900"
               }`}
             >
@@ -60,9 +60,9 @@ const UploadModal = ({
             </h2>
             <button
               onClick={() => setShowUploadModal(false)}
-              className="p-2 rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-700 transition"
+              className="p-1.5 sm:p-2 rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-700 transition"
             >
-              <X className="w-6 h-6 text-neutral-600 dark:text-neutral-300" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-600 dark:text-neutral-300" />
             </button>
           </div>
 
@@ -70,7 +70,7 @@ const UploadModal = ({
           <div
             onDrop={handleDrop}
             onDragOver={handleDragOver}
-            className={`w-full h-48 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer ${
+            className={`w-full h-40 sm:h-48 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer ${
               theme === "dark"
                 ? "border-neutral-700 hover:border-[#379937]"
                 : "border-neutral-300 hover:border-[#379937]"
@@ -84,10 +84,10 @@ const UploadModal = ({
                 className="max-h-full max-w-full object-contain rounded-lg"
               />
             ) : (
-              <div className="flex flex-col items-center text-center">
-                <UploadCloud className="w-10 h-10 text-neutral-500" />
+              <div className="flex flex-col items-center text-center px-4">
+                <UploadCloud className="w-8 h-8 sm:w-10 sm:h-10 text-neutral-500" />
                 <p
-                  className={`mt-2 ${
+                  className={`mt-2 text-sm sm:text-base ${
                     theme === "dark" ? "text-neutral-400" : "text-neutral-600"
                   }`}
                 >

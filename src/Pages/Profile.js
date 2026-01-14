@@ -232,37 +232,37 @@ const Profile = () => {
     <div className={`min-h-screen ${theme === "dark" ? "bg-neutral-950" : "bg-neutral-100"}`}>
       {/* Header */}
       <div className={`${theme === "dark" ? "bg-neutral-900 border-neutral-800" : "bg-white"} shadow-md border-b sticky top-0 z-40`}>
-        <div className="px-6 py-4 flex items-center gap-4">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3 sm:gap-4">
           <button
             onClick={() => navigate("/main")}
-            className={`p-2 rounded-lg transition-colors ${
+            className={`p-1.5 sm:p-2 rounded-lg transition-colors flex-shrink-0 ${
               theme === "dark" ? "hover:bg-neutral-800 text-neutral-400" : "hover:bg-neutral-100 text-neutral-600"
             }`}
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
-          <h1 className={`text-2xl font-bold ${theme === "dark" ? "text-white" : "text-neutral-900"}`}>My Profile</h1>
+          <h1 className={`text-xl sm:text-2xl font-bold ${theme === "dark" ? "text-white" : "text-neutral-900"}`}>My Profile</h1>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Error/Success Messages */}
         {error && (
-          <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <p className="text-red-500 text-sm">{error}</p>
+          <div className="mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg bg-red-500/10 border border-red-500/20 flex items-start gap-2 sm:gap-3">
+            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <p className="text-red-500 text-xs sm:text-sm">{error}</p>
           </div>
         )}
 
         {success && (
-          <div className="mb-6 p-4 rounded-lg bg-green-500/10 border border-green-500/20 flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-            <p className="text-green-500 text-sm">{success}</p>
+          <div className="mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg bg-green-500/10 border border-green-500/20 flex items-start gap-2 sm:gap-3">
+            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0 mt-0.5" />
+            <p className="text-green-500 text-xs sm:text-sm">{success}</p>
           </div>
         )}
 
         {/* Banner */}
-        <section className={`relative w-full h-72 md:h-96 flex items-center justify-center overflow-hidden rounded-2xl ${bannerPreview ? "" : theme === "dark" ? "bg-neutral-800" : "bg-neutral-300"}`}>
+        <section className={`relative w-full h-40 sm:h-64 md:h-72 lg:h-96 flex items-center justify-center overflow-hidden rounded-xl sm:rounded-2xl ${bannerPreview ? "" : theme === "dark" ? "bg-neutral-800" : "bg-neutral-300"}`}>
           {bannerPreview ? (
             <img src={bannerPreview} alt="Banner" className="absolute inset-0 w-full h-full object-cover" />
           ) : (
@@ -271,9 +271,9 @@ const Profile = () => {
             </div>
           )}
           <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-all">
-            <div className="flex gap-4">
-              <label className="cursor-pointer bg-white/90 hover:bg-white px-6 py-3 rounded-lg font-semibold text-neutral-900 flex items-center gap-2">
-                <Upload className="w-5 h-5" /> Change Banner
+            <div className="flex gap-2 sm:gap-4 flex-wrap justify-center">
+              <label className="cursor-pointer bg-white/90 hover:bg-white px-3 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base font-semibold text-neutral-900 flex items-center gap-1 sm:gap-2 whitespace-nowrap">
+                <Upload className="w-4 h-4 sm:w-5 sm:h-5" /> <span className="hidden sm:inline">Change</span> Banner
                 <input 
                   type="file" 
                   accept="image/*" 
@@ -285,7 +285,7 @@ const Profile = () => {
               {(bannerPreview || bannerFile) && (
                 <button 
                   onClick={resetBanner} 
-                  className="bg-red-500/90 hover:bg-red-600 px-6 py-3 rounded-lg font-semibold text-white"
+                  className="bg-red-500/90 hover:bg-red-600 px-3 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base font-semibold text-white whitespace-nowrap"
                   disabled={saving}
                 >
                   Reset
@@ -296,21 +296,21 @@ const Profile = () => {
         </section>
 
         {/* Profile Card */}
-        <div className={`rounded-3xl shadow-xl overflow-hidden mt-8 ${theme === "dark" ? "bg-neutral-900" : "bg-white"}`}>
-          <div className="px-8 py-8 border-b border-neutral-200 dark:border-neutral-800 flex items-center gap-8">
-            <div className="relative group">
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#379937] shadow-lg">
+        <div className={`rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden mt-6 sm:mt-8 ${theme === "dark" ? "bg-neutral-900" : "bg-white"}`}>
+          <div className="px-4 sm:px-8 py-6 sm:py-8 border-b border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
+            <div className="relative group flex-shrink-0">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-[#379937] shadow-lg">
                 {profilePreview ? (
                   <img src={profilePreview} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
                   <div className={`w-full h-full flex items-center justify-center ${theme === "dark" ? "bg-neutral-700" : "bg-neutral-300"} rounded-full`}>
-                    <User className="w-16 h-16 text-neutral-500" />
+                    <User className="w-10 h-10 sm:w-16 sm:h-16 text-neutral-500" />
                   </div>
                 )}
               </div>
               <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer">
                 <label className="cursor-pointer">
-                  <Upload className="w-8 h-8 text-white" />
+                  <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                   <input 
                     type="file" 
                     accept="image/*" 
@@ -322,19 +322,19 @@ const Profile = () => {
               </div>
             </div>
 
-            <div className="flex-1">
-              <h2 className={`text-3xl font-bold ${theme === "dark" ? "text-white" : "text-neutral-900"}`}>
+            <div className="flex-1 text-center sm:text-left">
+              <h2 className={`text-2xl sm:text-3xl font-bold ${theme === "dark" ? "text-white" : "text-neutral-900"}`}>
                 {user?.name || "User"}
               </h2>
-              <p className={`text-lg mt-2 flex items-center gap-2 ${theme === "dark" ? "text-neutral-400" : "text-neutral-600"}`}>
-                <Mail className="w-5 h-5" /> {user?.email}
+              <p className={`text-sm sm:text-lg mt-1 sm:mt-2 flex items-center justify-center sm:justify-start gap-1 sm:gap-2 ${theme === "dark" ? "text-neutral-400" : "text-neutral-600"}`}>
+                <Mail className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" /> <span className="break-all">{user?.email}</span>
               </p>
             </div>
 
             {(profilePreview || profileFile) && (
               <button 
                 onClick={resetProfile} 
-                className="bg-red-500 hover:bg-red-600 px-6 py-2 rounded-lg font-semibold text-white transition disabled:opacity-50"
+                className="bg-red-500 hover:bg-red-600 px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base font-semibold text-white transition disabled:opacity-50 whitespace-nowrap flex-shrink-0"
                 disabled={saving}
               >
                 Reset Photo
@@ -343,24 +343,24 @@ const Profile = () => {
           </div>
 
           {/* Account Info */}
-          <div className="px-8 py-8">
-            <h3 className={`text-xl font-bold mb-6 ${theme === "dark" ? "text-white" : "text-neutral-900"}`}>
+          <div className="px-4 sm:px-8 py-6 sm:py-8">
+            <h3 className={`text-lg sm:text-xl font-bold mb-4 sm:mb-6 ${theme === "dark" ? "text-white" : "text-neutral-900"}`}>
               Account Information
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <label className={`block text-sm font-semibold mb-2 ${theme === "dark" ? "text-neutral-300" : "text-neutral-700"}`}>
-                  <User className="inline w-4 h-4 mr-2" /> Full Name
+                <label className={`block text-xs sm:text-sm font-semibold mb-2 ${theme === "dark" ? "text-neutral-300" : "text-neutral-700"}`}>
+                  <User className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> Full Name
                 </label>
-                <div className={`px-4 py-3 rounded-lg border ${theme === "dark" ? "bg-neutral-800 border-neutral-700 text-neutral-200" : "bg-neutral-50 border-neutral-200 text-neutral-900"}`}>
+                <div className={`px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm border ${theme === "dark" ? "bg-neutral-800 border-neutral-700 text-neutral-200" : "bg-neutral-50 border-neutral-200 text-neutral-900"}`}>
                   {user?.name}
                 </div>
               </div>
               <div>
-                <label className={`block text-sm font-semibold mb-2 ${theme === "dark" ? "text-neutral-300" : "text-neutral-700"}`}>
-                  <Mail className="inline w-4 h-4 mr-2" /> Email
+                <label className={`block text-xs sm:text-sm font-semibold mb-2 ${theme === "dark" ? "text-neutral-300" : "text-neutral-700"}`}>
+                  <Mail className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> Email
                 </label>
-                <div className={`px-4 py-3 rounded-lg border ${theme === "dark" ? "bg-neutral-800 border-neutral-700 text-neutral-200" : "bg-neutral-50 border-neutral-200 text-neutral-900"}`}>
+                <div className={`px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm break-all border ${theme === "dark" ? "bg-neutral-800 border-neutral-700 text-neutral-200" : "bg-neutral-50 border-neutral-200 text-neutral-900"}`}>
                   {user?.email}
                 </div>
               </div>
@@ -368,13 +368,13 @@ const Profile = () => {
           </div>
 
           {/* Save Button */}
-          <div className="px-8 py-8 flex justify-center">
+          <div className="px-4 sm:px-8 py-6 sm:py-8 flex justify-center">
             <button 
               onClick={handleSave} 
               disabled={saving}
-              className="flex items-center gap-2 bg-[#379937] hover:bg-[#2d7e2d] text-white font-semibold py-3 px-6 rounded-lg transition-colors w-1/2 justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 bg-[#379937] hover:bg-[#2d7e2d] text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-lg text-sm sm:text-base transition-colors w-full sm:w-1/2 justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Save className="w-5 h-5" />
+              <Save className="w-4 h-4 sm:w-5 sm:h-5" />
               {saving ? "Saving..." : "Save Changes"}
             </button>
           </div>
