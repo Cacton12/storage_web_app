@@ -784,132 +784,66 @@ export default function PhotoGallery() {
         </div>
       )}
 
-      <header
-        className={`w-full px-3 md:px-6 py-3 md:py-4 ${
-          theme === "dark" ? "bg-neutral-900 border-neutral-800" : "bg-white"
-        } shadow-md sticky top-0 z-50 border-b`}
+<header
+  className={`w-full px-3 md:px-6 py-3 md:py-4 ${
+    theme === "dark" ? "bg-neutral-900 border-neutral-800" : "bg-white"
+  } shadow-md sticky top-0 z-50 border-b`}
+>
+  {/* Desktop Layout */}
+  <div className="hidden lg:flex justify-between items-center gap-4">
+    <h1 className="text-3xl font-bold text-[#379937] flex-shrink-0">MyGallery</h1>
+
+    {/* Search + Filter */}
+    <div className="flex gap-3 flex-1 max-w-2xl">
+      {/* Search Input */}
+      <div className="relative flex-1">
+        <Search
+          className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none z-10 ${
+            theme === "dark" ? "text-neutral-400" : "text-neutral-500"
+          }`}
+        />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search memories..."
+          className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-base border ${
+            theme === "dark"
+              ? "border-neutral-700 bg-neutral-900/70 text-neutral-400 placeholder:text-neutral-500"
+              : "border-neutral-300 bg-white/70 text-neutral-900 placeholder:text-neutral-400"
+          } outline-none transition shadow-sm focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
+        />
+      </div>
+
+      {/* Date Filter */}
+      <div className="relative w-48 flex-shrink-0">
+        <Calendar
+          className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none z-10 ${
+            theme === "dark" ? "text-neutral-400" : "text-neutral-500"
+          }`}
+        />
+        <input
+          type="date"
+          value={dateFilter}
+          onChange={(e) => setDateFilter(e.target.value)}
+          style={{ colorScheme: theme === "dark" ? "dark" : "light" }}
+          className={`w-full pl-10 pr-3 py-2.5 rounded-xl text-base border outline-none transition-all shadow-sm cursor-pointer ${
+            theme === "dark"
+              ? "bg-neutral-900/70 border-neutral-700 text-neutral-400"
+              : "bg-white/70 border-neutral-300 text-neutral-900"
+          } focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
+        />
+      </div>
+    </div>
+
+    {/* Upload + Profile */}
+    <div className="flex gap-4 items-center flex-shrink-0">
+      <button
+        onClick={() => setShowUploadModal(true)}
+        className="px-4 py-2.5 rounded-xl bg-[#379937] text-white font-semibold shadow-md flex items-center gap-2 hover:bg-[#2d7e2d] transition active:scale-95"
       >
-        {/* Desktop Layout */}
-        <div className="hidden lg:flex justify-between items-center gap-4">
-          <h1 className="text-3xl font-bold text-[#379937]">MyGallery</h1>
-
-          {/* Search + Filter */}
-          <div className="flex gap-3 flex-1 max-w-2xl">
-            {/* Search Input */}
-            <div className="relative flex-1">
-              <Search
-                className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${
-                  theme === "dark" ? "text-neutral-400" : "text-neutral-500"
-                }`}
-              />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search memories..."
-                className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-base border ${
-                  theme === "dark"
-                    ? "border-neutral-700 bg-neutral-900/70 text-neutral-400 placeholder:text-neutral-500"
-                    : "border-neutral-300 bg-white/70 text-neutral-900 placeholder:text-neutral-400"
-                } outline-none transition shadow-sm focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
-              />
-            </div>
-
-            {/* Date Filter */}
-            <div className="relative w-48">
-              <Calendar
-                className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none ${
-                  theme === "dark" ? "text-neutral-400" : "text-neutral-500"
-                }`}
-              />
-              <input
-                type="date"
-                value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value)}
-                style={{ colorScheme: theme === "dark" ? "dark" : "light" }}
-                className={`w-full pl-10 pr-3 py-2.5 rounded-xl text-base border outline-none transition-all shadow-sm cursor-pointer ${
-                  theme === "dark"
-                    ? "bg-neutral-900/70 border-neutral-700 text-neutral-400"
-                    : "bg-white/70 border-neutral-300 text-neutral-900"
-                } focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
-              />
-            </div>
-          </div>
-
-          {/* Upload + Profile */}
-          <div className="flex gap-4 items-center">
-            <button
-              onClick={() => setShowUploadModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-[#379937] text-white font-semibold shadow-md flex items-center gap-2 hover:bg-[#2d7e2d] transition"
-            >
-              <UploadCloud className="w-5 h-5" />
-              <span>Upload</span>
-            </button>
-            <ProfileDropdown
-              profileImage={
-                sessionStorage.getItem("profileURL") ||
-                localStorage.getItem("demoProfileImage") ||
-                user?.profileImage ||
-                null
-              }
-            />
-          </div>
-        </div>
-
-        {/* Mobile Layout */}
-<div className="lg:hidden">
-  {/* Single Row: Title + Search + Date + Upload + Profile */}
-  <div className="flex items-center gap-2">
-    <h1 className="text-lg font-bold text-[#379937] flex-shrink-0">MyGallery</h1>
-    
-    {/* Search Input */}
-    <div className="relative flex-1 min-w-0">
-      <Search
-        className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${
-          theme === "dark" ? "text-neutral-400" : "text-neutral-500"
-        }`}
-      />
-      <input
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search..."
-        className={`w-full pl-8 pr-2 py-2 rounded-lg text-xs border ${
-          theme === "dark" ? "border-neutral-700 bg-neutral-900/70 text-neutral-400 placeholder:text-neutral-500" : "border-neutral-300 bg-white/70 text-neutral-900 placeholder:text-neutral-400"
-        } outline-none transition shadow-sm focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
-      />
-    </div>
-
-    {/* Date Filter - Icon Only */}
-    <div className="relative w-9 h-9 flex-shrink-0">
-      <Calendar
-        className={`absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${
-          theme === "dark" ? "text-neutral-400" : "text-neutral-500"
-        }`}
-      />
-      <input
-        type="date"
-        value={dateFilter}
-        onChange={(e) => setDateFilter(e.target.value)}
-        style={{ colorScheme: theme === "dark" ? "dark" : "light" }}
-        className={`w-full h-full rounded-lg border outline-none transition-all shadow-sm cursor-pointer opacity-0 ${
-          theme === "dark"
-            ? "bg-neutral-900/70 border-neutral-700"
-            : "bg-white/70 border-neutral-300"
-        } focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
-        title="Filter by date"
-      />
-    </div>
-
-    {/* Upload Button - Icon Only */}
-    <button
-      onClick={() => setShowUploadModal(true)}
-      className="w-9 h-9 rounded-lg bg-[#379937] text-white font-semibold shadow-md flex items-center justify-center hover:bg-[#2d7e2d] transition active:scale-95 flex-shrink-0"
-      title="Upload photo"
-    >
-      <UploadCloud className="w-4 h-4" />
-    </button>
-
-    {/* Profile */}
-    <div className="flex-shrink-0">
+        <UploadCloud className="w-5 h-5" />
+        <span>Upload</span>
+      </button>
       <ProfileDropdown
         profileImage={
           sessionStorage.getItem("profileURL") ||
@@ -920,8 +854,82 @@ export default function PhotoGallery() {
       />
     </div>
   </div>
-</div>
-      </header>
+
+  {/* Mobile Layout */}
+  <div className="lg:hidden">
+    <div className="flex items-center gap-2">
+      {/* Title */}
+      <h1 className="text-lg font-bold text-[#379937] flex-shrink-0">MyGallery</h1>
+      
+      {/* Search Input */}
+      <div className="relative flex-1 min-w-0">
+        <Search
+          className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none z-10 ${
+            theme === "dark" ? "text-neutral-400" : "text-neutral-500"
+          }`}
+        />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search..."
+          className={`w-full pl-8 pr-2 py-2 rounded-lg text-xs border ${
+            theme === "dark" 
+              ? "border-neutral-700 bg-neutral-900/70 text-neutral-400 placeholder:text-neutral-500" 
+              : "border-neutral-300 bg-white/70 text-neutral-900 placeholder:text-neutral-400"
+          } outline-none transition shadow-sm focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
+        />
+      </div>
+
+      {/* Date Filter Button - Icon Only */}
+      <div className="relative w-9 h-9 flex-shrink-0 overflow-hidden rounded-lg">
+        <input
+          type="date"
+          value={dateFilter}
+          onChange={(e) => setDateFilter(e.target.value)}
+          style={{ colorScheme: theme === "dark" ? "dark" : "light" }}
+          className={`absolute inset-0 w-full h-full rounded-lg border outline-none transition-all shadow-sm cursor-pointer opacity-0 z-20 ${
+            theme === "dark"
+              ? "bg-neutral-900/70 border-neutral-700"
+              : "bg-white/70 border-neutral-300"
+          } focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
+          title="Filter by date"
+        />
+        <div className={`absolute inset-0 w-full h-full rounded-lg border flex items-center justify-center pointer-events-none z-10 ${
+          theme === "dark"
+            ? "bg-neutral-900/70 border-neutral-700"
+            : "bg-white/70 border-neutral-300"
+        }`}>
+          <Calendar
+            className={`w-4 h-4 ${
+              theme === "dark" ? "text-neutral-400" : "text-neutral-500"
+            }`}
+          />
+        </div>
+      </div>
+
+      {/* Upload Button - Icon Only */}
+      <button
+        onClick={() => setShowUploadModal(true)}
+        className="w-9 h-9 flex-shrink-0 rounded-lg bg-[#379937] text-white font-semibold shadow-md flex items-center justify-center hover:bg-[#2d7e2d] transition active:scale-95"
+        title="Upload photo"
+      >
+        <UploadCloud className="w-4 h-4" />
+      </button>
+
+      {/* Profile */}
+      <div className="flex-shrink-0">
+        <ProfileDropdown
+          profileImage={
+            sessionStorage.getItem("profileURL") ||
+            localStorage.getItem("demoProfileImage") ||
+            user?.profileImage ||
+            null
+          }
+        />
+      </div>
+    </div>
+  </div>
+</header>
 
       {/* Global Error Message */}
       {error && (
