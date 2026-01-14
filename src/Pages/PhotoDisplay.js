@@ -1067,162 +1067,175 @@ export default function PhotoGallery() {
         </div>
       </main>
 
-      {/* Lightbox */}
-      <AnimatePresence>
-        {selectedPhoto && (
-          <motion.div
-            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-[999] p-0 sm:p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => {
-              setSelectedPhoto(null);
-              setDeleteError("");
+{/* Lightbox */}
+<AnimatePresence>
+  {selectedPhoto && (
+    <motion.div
+      className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-[999] p-0 sm:p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => {
+        setSelectedPhoto(null);
+        setDeleteError("");
+      }}
+    >
+      <motion.div
+        className={`relative rounded-none sm:rounded-2xl shadow-2xl overflow-hidden w-full h-full sm:max-w-4xl sm:max-h-[90vh] sm:h-auto flex flex-col ${
+          theme === "dark" ? "bg-neutral-900" : "bg-neutral-100"
+        }`}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Delete Error in Lightbox */}
+        {deleteError && (
+          <div className="absolute top-16 sm:top-20 left-1/2 transform -translate-x-1/2 z-20 max-w-sm w-[calc(100%-2rem)] sm:w-full">
+            <div className="p-3 rounded-lg bg-red-500/90 border border-red-600 flex items-start gap-2 text-xs sm:text-sm shadow-xl">
+              <AlertCircle className="w-4 h-4 text-white flex-shrink-0 mt-0.5" />
+              <p className="text-white flex-1">{deleteError}</p>
+              <button
+                onClick={() => setDeleteError("")}
+                className="text-white hover:text-red-100 flex-shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Image Container */}
+        <div
+          className={`flex-1 flex items-center justify-center overflow-hidden ${
+            theme === "dark" ? "bg-neutral-900" : "bg-neutral-300"
+          }`}
+        >
+          <OptimizedImage
+            src={selectedPhoto.src}
+            alt={selectedPhoto.title}
+            className="max-w-full max-h-full object-contain"
+            priority={true}
+          />
+        </div>
+
+        {/* Bottom Info Section */}
+        <div
+          className={`px-3 sm:px-6 py-3 sm:py-4 border-t ${
+            theme === "dark"
+              ? "bg-neutral-800 border-neutral-700"
+              : "bg-neutral-100 border-neutral-200"
+          }`}
+        >
+          <h3
+            className={`text-base sm:text-xl md:text-2xl font-bold ${
+              theme === "dark" ? "text-white" : "text-neutral-900"
+            }`}
+          >
+            {selectedPhoto.title}
+          </h3>
+          <p
+            className={`mt-1 text-xs sm:text-sm md:text-base ${
+              theme === "dark" ? "text-neutral-300" : "text-neutral-600"
+            }`}
+          >
+            {selectedPhoto.desc}
+          </p>
+        </div>
+
+        {/* Close Button - Top Right */}
+        <button
+          className={`absolute top-3 sm:top-4 right-3 sm:right-4 p-2 sm:p-2.5 rounded-full ${
+            theme === "dark"
+              ? "bg-black/80 hover:bg-black"
+              : "bg-white/80 hover:bg-white"
+          } transition-colors z-30 active:scale-95 shadow-lg`}
+          onClick={() => {
+            setSelectedPhoto(null);
+            setDeleteError("");
+          }}
+        >
+          <X
+            className={`w-5 h-5 sm:w-6 sm:h-6 ${
+              theme === "dark" ? "text-white" : "text-neutral-900"
+            }`}
+          />
+        </button>
+
+        {/* Navigation Arrows */}
+        <button
+          className={`absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full ${
+            theme === "dark"
+              ? "bg-black/80 hover:bg-black"
+              : "bg-white/80 hover:bg-white"
+          } transition-colors active:scale-95 z-30 shadow-lg`}
+          onClick={(e) => {
+            e.stopPropagation();
+            navigatePhoto("prev");
+          }}
+        >
+          <ChevronLeft
+            className={`w-5 h-5 sm:w-6 sm:h-6 ${
+              theme === "dark" ? "text-white" : "text-neutral-900"
+            }`}
+          />
+        </button>
+
+        <button
+          className={`absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full ${
+            theme === "dark"
+              ? "bg-black/80 hover:bg-black"
+              : "bg-white/80 hover:bg-white"
+          } transition-colors active:scale-95 z-30 shadow-lg`}
+          onClick={(e) => {
+            e.stopPropagation();
+            navigatePhoto("next");
+          }}
+        >
+          <ChevronRight
+            className={`w-5 h-5 sm:w-6 sm:h-6 ${
+              theme === "dark" ? "text-white" : "text-neutral-900"
+            }`}
+          />
+        </button>
+
+        {/* Bottom Left - Photo Counter (Mobile & Desktop) */}
+        <div
+          className={`absolute bottom-20 left-3 sm:bottom-24 sm:left-1/2 sm:-translate-x-1/2 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold ${
+            theme === "dark"
+              ? "bg-black/80 text-neutral-100"
+              : "bg-white/80 text-neutral-900"
+          } shadow-lg z-30`}
+        >
+          {photos.findIndex((p) => p.id === selectedPhoto.id) + 1} / {photos.length}
+        </div>
+
+        {/* Bottom Right - Action Buttons */}
+        <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 flex flex-row gap-2 z-30">
+          <button
+            className="px-3 py-2 sm:px-4 rounded-lg text-xs sm:text-sm bg-blue-600 text-white font-semibold hover:bg-blue-700 transition active:scale-95 shadow-lg whitespace-nowrap"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowEditModal(true);
             }}
           >
-            <motion.div
-              className={`relative rounded-none sm:rounded-2xl shadow-2xl overflow-hidden w-full h-full sm:max-w-4xl sm:max-h-[90vh] sm:h-auto flex flex-col ${
-                theme === "dark" ? "bg-neutral-900" : "bg-neutral-100"
-              }`}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Delete Error in Lightbox */}
-              {deleteError && (
-                <div className="absolute top-16 sm:top-20 left-1/2 transform -translate-x-1/2 z-10 max-w-sm w-[calc(100%-2rem)] sm:w-full mx-4">
-                  <div className="p-3 rounded-lg bg-red-500/90 border border-red-600 flex items-start gap-2 text-xs sm:text-sm">
-                    <AlertCircle className="w-4 h-4 text-white flex-shrink-0 mt-0.5" />
-                    <p className="text-white flex-1">{deleteError}</p>
-                    <button
-                      onClick={() => setDeleteError("")}
-                      className="text-white hover:text-red-100 flex-shrink-0"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              <div
-                className={`flex-1 flex items-center justify-center overflow-hidden ${
-                  theme === "dark" ? "bg-neutral-900" : "bg-neutral-300"
-                }`}
-              >
-                <OptimizedImage
-                  src={selectedPhoto.src}
-                  alt={selectedPhoto.title}
-                  className="max-w-full max-h-full object-contain"
-                  priority={true}
-                />
-              </div>
-
-              <div
-                className={`px-3 sm:px-6 py-3 sm:py-4 border-t ${
-                  theme === "dark"
-                    ? "bg-neutral-800 border-neutral-700"
-                    : "bg-neutral-100 border-neutral-200"
-                }`}
-              >
-                <h3
-                  className={`text-base sm:text-xl md:text-2xl font-bold ${
-                    theme === "dark" ? "text-white" : "text-neutral-900"
-                  }`}
-                >
-                  {selectedPhoto.title}
-                </h3>
-                <p
-                  className={`mt-1 text-xs sm:text-sm md:text-base ${
-                    theme === "dark" ? "text-neutral-300" : "text-neutral-600"
-                  }`}
-                >
-                  {selectedPhoto.desc}
-                </p>
-              </div>
-
-              {/* Close Button */}
-              <button
-                className={`absolute top-3 sm:top-4 right-3 sm:right-4 p-2 sm:p-2.5 rounded-full ${
-                  theme === "dark"
-                    ? "bg-black/70 hover:bg-black/90"
-                    : "bg-white/70 hover:bg-white/90"
-                } transition-colors z-10 active:scale-95`}
-                onClick={() => {
-                  setSelectedPhoto(null);
-                  setDeleteError("");
-                }}
-              >
-                <X
-                  className={`w-5 h-5 sm:w-6 sm:h-6 ${
-                    theme === "dark" ? "text-white" : "text-neutral-900"
-                  }`}
-                />
-              </button>
-
-              {/* Navigation Arrows - Now visible on mobile */}
-              <button
-                className={`absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full ${
-                  theme === "dark"
-                    ? "bg-black/70 hover:bg-black/90"
-                    : "bg-white/70 hover:bg-white/90"
-                } transition-colors active:scale-95 z-10`}
-                onClick={() => navigatePhoto("prev")}
-              >
-                <ChevronLeft
-                  className={`w-5 h-5 sm:w-6 sm:h-6 ${
-                    theme === "dark" ? "text-white" : "text-neutral-900"
-                  }`}
-                />
-              </button>
-
-              <button
-                className={`absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full ${
-                  theme === "dark"
-                    ? "bg-black/70 hover:bg-black/90"
-                    : "bg-white/70 hover:bg-white/90"
-                } transition-colors active:scale-95 z-10`}
-                onClick={() => navigatePhoto("next")}
-              >
-                <ChevronRight
-                  className={`w-5 h-5 sm:w-6 sm:h-6 ${
-                    theme === "dark" ? "text-white" : "text-neutral-900"
-                  }`}
-                />
-              </button>
-
-              {/* Edit/Delete Buttons - Mobile optimized */}
-              <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 flex flex-col sm:flex-row gap-2 z-10">
-                <button
-                  className="px-4 py-2 rounded-lg text-sm bg-blue-600 text-white font-semibold hover:bg-blue-700 transition active:scale-95 shadow-lg whitespace-nowrap"
-                  onClick={() => setShowEditModal(true)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="px-4 py-2 rounded-lg text-sm bg-red-600 text-white font-semibold hover:bg-red-700 transition active:scale-95 shadow-lg whitespace-nowrap"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </button>
-              </div>
-
-              {/* Photo Index - Repositioned to avoid button overlap */}
-              <div
-                className={`absolute bottom-3 left-3 sm:bottom-4 sm:left-1/2 sm:-translate-x-1/2 px-3 py-1 rounded-full text-xs font-semibold ${
-                  theme === "dark"
-                    ? "bg-black/70 text-neutral-100"
-                    : "bg-white/70 text-neutral-900"
-                } shadow-lg z-10`}
-              >
-                {photos.findIndex((p) => p.id === selectedPhoto.id) + 1} /{" "}
-                {photos.length}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            Edit
+          </button>
+          <button
+            className="px-3 py-2 sm:px-4 rounded-lg text-xs sm:text-sm bg-red-600 text-white font-semibold hover:bg-red-700 transition active:scale-95 shadow-lg whitespace-nowrap"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete();
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
       {/* Upload Modal */}
       <UploadModal
