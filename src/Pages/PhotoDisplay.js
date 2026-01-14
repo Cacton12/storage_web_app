@@ -770,7 +770,9 @@ export default function PhotoGallery() {
         >
           <span className="flex items-center gap-1.5 md:gap-2">
             <span>⚠️</span>
-            <span className="hidden sm:inline">You are in Demo Mode — all changes will not be saved</span>
+            <span className="hidden sm:inline">
+              You are in Demo Mode — all changes will not be saved
+            </span>
             <span className="sm:hidden">Demo Mode — changes not saved</span>
           </span>
           <button
@@ -783,63 +785,131 @@ export default function PhotoGallery() {
       )}
 
       <header
-  className={`w-full px-3 md:px-6 py-3 md:py-4 ${
-    theme === "dark" ? "bg-neutral-900 border-neutral-800" : "bg-white"
-  } shadow-md sticky top-0 z-50 border-b`}
->
-  {/* Desktop Layout */}
-  <div className="hidden lg:flex justify-between items-center gap-4">
-    <h1 className="text-3xl font-bold text-[#379937]">MyGallery</h1>
+        className={`w-full px-3 md:px-6 py-3 md:py-4 ${
+          theme === "dark" ? "bg-neutral-900 border-neutral-800" : "bg-white"
+        } shadow-md sticky top-0 z-50 border-b`}
+      >
+        {/* Desktop Layout */}
+        <div className="hidden lg:flex justify-between items-center gap-4">
+          <h1 className="text-3xl font-bold text-[#379937]">MyGallery</h1>
 
-    {/* Search + Filter */}
-    <div className="flex gap-3 flex-1 max-w-2xl">
-      {/* Search Input */}
-      <div className="relative flex-1">
-        <Search
-          className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${
-            theme === "dark" ? "text-neutral-400" : "text-neutral-500"
-          }`}
-        />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search memories..."
-          className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-base border ${
-            theme === "dark" ? "border-neutral-700 bg-neutral-900/70 text-neutral-400 placeholder:text-neutral-500" : "border-neutral-300 bg-white/70 text-neutral-900 placeholder:text-neutral-400"
-          } outline-none transition shadow-sm focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
-        />
-      </div>
+          {/* Search + Filter */}
+          <div className="flex gap-3 flex-1 max-w-2xl">
+            {/* Search Input */}
+            <div className="relative flex-1">
+              <Search
+                className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${
+                  theme === "dark" ? "text-neutral-400" : "text-neutral-500"
+                }`}
+              />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search memories..."
+                className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-base border ${
+                  theme === "dark"
+                    ? "border-neutral-700 bg-neutral-900/70 text-neutral-400 placeholder:text-neutral-500"
+                    : "border-neutral-300 bg-white/70 text-neutral-900 placeholder:text-neutral-400"
+                } outline-none transition shadow-sm focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
+              />
+            </div>
 
-      {/* Date Filter */}
-      <div className="relative w-48">
-        <Calendar
-          className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none ${
-            theme === "dark" ? "text-neutral-400" : "text-neutral-500"
-          }`}
-        />
-        <input
-          type="date"
-          value={dateFilter}
-          onChange={(e) => setDateFilter(e.target.value)}
-          style={{ colorScheme: theme === "dark" ? "dark" : "light" }}
-          className={`w-full pl-10 pr-3 py-2.5 rounded-xl text-base border outline-none transition-all shadow-sm cursor-pointer ${
-            theme === "dark"
-              ? "bg-neutral-900/70 border-neutral-700 text-neutral-400"
-              : "bg-white/70 border-neutral-300 text-neutral-900"
-          } focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
-        />
-      </div>
+            {/* Date Filter */}
+            <div className="relative w-48">
+              <Calendar
+                className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none ${
+                  theme === "dark" ? "text-neutral-400" : "text-neutral-500"
+                }`}
+              />
+              <input
+                type="date"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                style={{ colorScheme: theme === "dark" ? "dark" : "light" }}
+                className={`w-full pl-10 pr-3 py-2.5 rounded-xl text-base border outline-none transition-all shadow-sm cursor-pointer ${
+                  theme === "dark"
+                    ? "bg-neutral-900/70 border-neutral-700 text-neutral-400"
+                    : "bg-white/70 border-neutral-300 text-neutral-900"
+                } focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
+              />
+            </div>
+          </div>
+
+          {/* Upload + Profile */}
+          <div className="flex gap-4 items-center">
+            <button
+              onClick={() => setShowUploadModal(true)}
+              className="px-4 py-2.5 rounded-xl bg-[#379937] text-white font-semibold shadow-md flex items-center gap-2 hover:bg-[#2d7e2d] transition"
+            >
+              <UploadCloud className="w-5 h-5" />
+              <span>Upload</span>
+            </button>
+            <ProfileDropdown
+              profileImage={
+                sessionStorage.getItem("profileURL") ||
+                localStorage.getItem("demoProfileImage") ||
+                user?.profileImage ||
+                null
+              }
+            />
+          </div>
+        </div>
+
+        {/* Mobile Layout */}
+<div className="lg:hidden">
+  {/* Single Row: Title + Search + Date + Upload + Profile */}
+  <div className="flex items-center gap-2">
+    <h1 className="text-lg font-bold text-[#379937] flex-shrink-0">MyGallery</h1>
+    
+    {/* Search Input */}
+    <div className="relative flex-1 min-w-0">
+      <Search
+        className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${
+          theme === "dark" ? "text-neutral-400" : "text-neutral-500"
+        }`}
+      />
+      <input
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search..."
+        className={`w-full pl-8 pr-2 py-2 rounded-lg text-xs border ${
+          theme === "dark" ? "border-neutral-700 bg-neutral-900/70 text-neutral-400 placeholder:text-neutral-500" : "border-neutral-300 bg-white/70 text-neutral-900 placeholder:text-neutral-400"
+        } outline-none transition shadow-sm focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
+      />
     </div>
 
-    {/* Upload + Profile */}
-    <div className="flex gap-4 items-center">
-      <button
-        onClick={() => setShowUploadModal(true)}
-        className="px-4 py-2.5 rounded-xl bg-[#379937] text-white font-semibold shadow-md flex items-center gap-2 hover:bg-[#2d7e2d] transition"
-      >
-        <UploadCloud className="w-5 h-5" />
-        <span>Upload</span>
-      </button>
+    {/* Date Filter - Icon Only */}
+    <div className="relative w-9 h-9 flex-shrink-0">
+      <Calendar
+        className={`absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${
+          theme === "dark" ? "text-neutral-400" : "text-neutral-500"
+        }`}
+      />
+      <input
+        type="date"
+        value={dateFilter}
+        onChange={(e) => setDateFilter(e.target.value)}
+        style={{ colorScheme: theme === "dark" ? "dark" : "light" }}
+        className={`w-full h-full rounded-lg border outline-none transition-all shadow-sm cursor-pointer opacity-0 ${
+          theme === "dark"
+            ? "bg-neutral-900/70 border-neutral-700"
+            : "bg-white/70 border-neutral-300"
+        } focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
+        title="Filter by date"
+      />
+    </div>
+
+    {/* Upload Button - Icon Only */}
+    <button
+      onClick={() => setShowUploadModal(true)}
+      className="w-9 h-9 rounded-lg bg-[#379937] text-white font-semibold shadow-md flex items-center justify-center hover:bg-[#2d7e2d] transition active:scale-95 flex-shrink-0"
+      title="Upload photo"
+    >
+      <UploadCloud className="w-4 h-4" />
+    </button>
+
+    {/* Profile */}
+    <div className="flex-shrink-0">
       <ProfileDropdown
         profileImage={
           sessionStorage.getItem("profileURL") ||
@@ -850,72 +920,8 @@ export default function PhotoGallery() {
       />
     </div>
   </div>
-
-  {/* Mobile Layout */}
-  <div className="lg:hidden">
-    {/* Top Row: Title + Profile */}
-    <div className="flex justify-between items-center mb-3">
-      <h1 className="text-xl md:text-2xl font-bold text-[#379937]">MyGallery</h1>
-      <ProfileDropdown
-        profileImage={
-          sessionStorage.getItem("profileURL") ||
-          localStorage.getItem("demoProfileImage") ||
-          user?.profileImage ||
-          null
-        }
-      />
-    </div>
-
-    {/* Search + Filter + Upload Row */}
-    <div className="flex flex-col sm:flex-row gap-2">
-      {/* Search Input */}
-      <div className="relative flex-1">
-        <Search
-          className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${
-            theme === "dark" ? "text-neutral-400" : "text-neutral-500"
-          }`}
-        />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search..."
-          className={`w-full pl-9 pr-3 py-2.5 rounded-lg text-sm border ${
-            theme === "dark" ? "border-neutral-700 bg-neutral-900/70 text-neutral-400 placeholder:text-neutral-500" : "border-neutral-300 bg-white/70 text-neutral-900 placeholder:text-neutral-400"
-          } outline-none transition shadow-sm focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
-        />
-      </div>
-
-      {/* Date Filter */}
-      <div className="relative flex-1 sm:max-w-[160px]">
-        <Calendar
-          className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${
-            theme === "dark" ? "text-neutral-400" : "text-neutral-500"
-          }`}
-        />
-        <input
-          type="date"
-          value={dateFilter}
-          onChange={(e) => setDateFilter(e.target.value)}
-          style={{ colorScheme: theme === "dark" ? "dark" : "light" }}
-          className={`w-full pl-9 pr-3 py-2.5 rounded-lg text-sm border outline-none transition-all shadow-sm cursor-pointer ${
-            theme === "dark"
-              ? "bg-neutral-900/70 border-neutral-700 text-neutral-400"
-              : "bg-white/70 border-neutral-300 text-neutral-900"
-          } focus:ring-2 focus:ring-[#379937]/40 focus:border-[#379937]`}
-        />
-      </div>
-
-      {/* Upload Button */}
-      <button
-        onClick={() => setShowUploadModal(true)}
-        className="px-4 py-2.5 rounded-lg bg-[#379937] text-white font-semibold shadow-md flex items-center justify-center gap-2 hover:bg-[#2d7e2d] transition text-sm whitespace-nowrap sm:w-auto"
-      >
-        <UploadCloud className="w-4 h-4" />
-        <span>Upload</span>
-      </button>
-    </div>
-  </div>
-</header>
+</div>
+      </header>
 
       {/* Global Error Message */}
       {error && (
@@ -980,9 +986,7 @@ export default function PhotoGallery() {
             />
             <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center p-3 sm:p-4 md:p-6">
               <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold text-white">
-                {user?.name
-                  ? `${user.name}'s Memories`
-                  : "Your Memories"}
+                {user?.name ? `${user.name}'s Memories` : "Your Memories"}
               </h2>
               <p className="text-white text-xs sm:text-sm md:text-base lg:text-lg mt-1 sm:mt-2 md:mt-4 max-w-2xl">
                 A clean and immersive way to store and view your photos
@@ -1056,160 +1060,161 @@ export default function PhotoGallery() {
       </main>
 
       {/* Lightbox */}
-<AnimatePresence>
-  {selectedPhoto && (
-    <motion.div
-      className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-[999] p-0 sm:p-4"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={() => {
-        setSelectedPhoto(null);
-        setDeleteError("");
-      }}
-    >
-      <motion.div
-        className={`relative rounded-none sm:rounded-2xl shadow-2xl overflow-hidden w-full h-full sm:max-w-4xl sm:max-h-[90vh] sm:h-auto flex flex-col ${
-          theme === "dark" ? "bg-neutral-900" : "bg-neutral-100"
-        }`}
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Delete Error in Lightbox */}
-        {deleteError && (
-          <div className="absolute top-16 sm:top-20 left-1/2 transform -translate-x-1/2 z-10 max-w-sm w-[calc(100%-2rem)] sm:w-full mx-4">
-            <div className="p-3 rounded-lg bg-red-500/90 border border-red-600 flex items-start gap-2 text-xs sm:text-sm">
-              <AlertCircle className="w-4 h-4 text-white flex-shrink-0 mt-0.5" />
-              <p className="text-white flex-1">{deleteError}</p>
-              <button
-                onClick={() => setDeleteError("")}
-                className="text-white hover:text-red-100 flex-shrink-0"
+      <AnimatePresence>
+        {selectedPhoto && (
+          <motion.div
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-[999] p-0 sm:p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => {
+              setSelectedPhoto(null);
+              setDeleteError("");
+            }}
+          >
+            <motion.div
+              className={`relative rounded-none sm:rounded-2xl shadow-2xl overflow-hidden w-full h-full sm:max-w-4xl sm:max-h-[90vh] sm:h-auto flex flex-col ${
+                theme === "dark" ? "bg-neutral-900" : "bg-neutral-100"
+              }`}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Delete Error in Lightbox */}
+              {deleteError && (
+                <div className="absolute top-16 sm:top-20 left-1/2 transform -translate-x-1/2 z-10 max-w-sm w-[calc(100%-2rem)] sm:w-full mx-4">
+                  <div className="p-3 rounded-lg bg-red-500/90 border border-red-600 flex items-start gap-2 text-xs sm:text-sm">
+                    <AlertCircle className="w-4 h-4 text-white flex-shrink-0 mt-0.5" />
+                    <p className="text-white flex-1">{deleteError}</p>
+                    <button
+                      onClick={() => setDeleteError("")}
+                      className="text-white hover:text-red-100 flex-shrink-0"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div
+                className={`flex-1 flex items-center justify-center overflow-hidden ${
+                  theme === "dark" ? "bg-neutral-900" : "bg-neutral-300"
+                }`}
               >
-                <X className="w-4 h-4" />
+                <OptimizedImage
+                  src={selectedPhoto.src}
+                  alt={selectedPhoto.title}
+                  className="max-w-full max-h-full object-contain"
+                  priority={true}
+                />
+              </div>
+
+              <div
+                className={`px-3 sm:px-6 py-3 sm:py-4 border-t ${
+                  theme === "dark"
+                    ? "bg-neutral-800 border-neutral-700"
+                    : "bg-neutral-100 border-neutral-200"
+                }`}
+              >
+                <h3
+                  className={`text-base sm:text-xl md:text-2xl font-bold ${
+                    theme === "dark" ? "text-white" : "text-neutral-900"
+                  }`}
+                >
+                  {selectedPhoto.title}
+                </h3>
+                <p
+                  className={`mt-1 text-xs sm:text-sm md:text-base ${
+                    theme === "dark" ? "text-neutral-300" : "text-neutral-600"
+                  }`}
+                >
+                  {selectedPhoto.desc}
+                </p>
+              </div>
+
+              {/* Close Button */}
+              <button
+                className={`absolute top-3 sm:top-4 right-3 sm:right-4 p-2 sm:p-2.5 rounded-full ${
+                  theme === "dark"
+                    ? "bg-black/70 hover:bg-black/90"
+                    : "bg-white/70 hover:bg-white/90"
+                } transition-colors z-10 active:scale-95`}
+                onClick={() => {
+                  setSelectedPhoto(null);
+                  setDeleteError("");
+                }}
+              >
+                <X
+                  className={`w-5 h-5 sm:w-6 sm:h-6 ${
+                    theme === "dark" ? "text-white" : "text-neutral-900"
+                  }`}
+                />
               </button>
-            </div>
-          </div>
+
+              {/* Navigation Arrows - Now visible on mobile */}
+              <button
+                className={`absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full ${
+                  theme === "dark"
+                    ? "bg-black/70 hover:bg-black/90"
+                    : "bg-white/70 hover:bg-white/90"
+                } transition-colors active:scale-95 z-10`}
+                onClick={() => navigatePhoto("prev")}
+              >
+                <ChevronLeft
+                  className={`w-5 h-5 sm:w-6 sm:h-6 ${
+                    theme === "dark" ? "text-white" : "text-neutral-900"
+                  }`}
+                />
+              </button>
+
+              <button
+                className={`absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full ${
+                  theme === "dark"
+                    ? "bg-black/70 hover:bg-black/90"
+                    : "bg-white/70 hover:bg-white/90"
+                } transition-colors active:scale-95 z-10`}
+                onClick={() => navigatePhoto("next")}
+              >
+                <ChevronRight
+                  className={`w-5 h-5 sm:w-6 sm:h-6 ${
+                    theme === "dark" ? "text-white" : "text-neutral-900"
+                  }`}
+                />
+              </button>
+
+              {/* Edit/Delete Buttons - Mobile optimized */}
+              <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 flex flex-col sm:flex-row gap-2 z-10">
+                <button
+                  className="px-4 py-2 rounded-lg text-sm bg-blue-600 text-white font-semibold hover:bg-blue-700 transition active:scale-95 shadow-lg whitespace-nowrap"
+                  onClick={() => setShowEditModal(true)}
+                >
+                  Edit
+                </button>
+                <button
+                  className="px-4 py-2 rounded-lg text-sm bg-red-600 text-white font-semibold hover:bg-red-700 transition active:scale-95 shadow-lg whitespace-nowrap"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </button>
+              </div>
+
+              {/* Photo Index - Repositioned to avoid button overlap */}
+              <div
+                className={`absolute bottom-3 left-3 sm:bottom-4 sm:left-1/2 sm:-translate-x-1/2 px-3 py-1 rounded-full text-xs font-semibold ${
+                  theme === "dark"
+                    ? "bg-black/70 text-neutral-100"
+                    : "bg-white/70 text-neutral-900"
+                } shadow-lg z-10`}
+              >
+                {photos.findIndex((p) => p.id === selectedPhoto.id) + 1} /{" "}
+                {photos.length}
+              </div>
+            </motion.div>
+          </motion.div>
         )}
-
-        <div
-          className={`flex-1 flex items-center justify-center overflow-hidden ${
-            theme === "dark" ? "bg-neutral-900" : "bg-neutral-300"
-          }`}
-        >
-          <OptimizedImage
-            src={selectedPhoto.src}
-            alt={selectedPhoto.title}
-            className="max-w-full max-h-full object-contain"
-            priority={true}
-          />
-        </div>
-
-        <div
-          className={`px-3 sm:px-6 py-3 sm:py-4 border-t ${
-            theme === "dark"
-              ? "bg-neutral-800 border-neutral-700"
-              : "bg-neutral-100 border-neutral-200"
-          }`}
-        >
-          <h3
-            className={`text-base sm:text-xl md:text-2xl font-bold ${
-              theme === "dark" ? "text-white" : "text-neutral-900"
-            }`}
-          >
-            {selectedPhoto.title}
-          </h3>
-          <p
-            className={`mt-1 text-xs sm:text-sm md:text-base ${
-              theme === "dark" ? "text-neutral-300" : "text-neutral-600"
-            }`}
-          >
-            {selectedPhoto.desc}
-          </p>
-        </div>
-
-        {/* Close Button */}
-        <button
-          className={`absolute top-3 sm:top-4 right-3 sm:right-4 p-2 sm:p-2.5 rounded-full ${
-            theme === "dark"
-              ? "bg-black/70 hover:bg-black/90"
-              : "bg-white/70 hover:bg-white/90"
-          } transition-colors z-10 active:scale-95`}
-          onClick={() => {
-            setSelectedPhoto(null);
-            setDeleteError("");
-          }}
-        >
-          <X
-            className={`w-5 h-5 sm:w-6 sm:h-6 ${
-              theme === "dark" ? "text-white" : "text-neutral-900"
-            }`}
-          />
-        </button>
-
-        {/* Navigation Arrows - Now visible on mobile */}
-        <button
-          className={`absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full ${
-            theme === "dark"
-              ? "bg-black/70 hover:bg-black/90"
-              : "bg-white/70 hover:bg-white/90"
-          } transition-colors active:scale-95 z-10`}
-          onClick={() => navigatePhoto("prev")}
-        >
-          <ChevronLeft
-            className={`w-5 h-5 sm:w-6 sm:h-6 ${
-              theme === "dark" ? "text-white" : "text-neutral-900"
-            }`}
-          />
-        </button>
-
-        <button
-          className={`absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full ${
-            theme === "dark"
-              ? "bg-black/70 hover:bg-black/90"
-              : "bg-white/70 hover:bg-white/90"
-          } transition-colors active:scale-95 z-10`}
-          onClick={() => navigatePhoto("next")}
-        >
-          <ChevronRight
-            className={`w-5 h-5 sm:w-6 sm:h-6 ${
-              theme === "dark" ? "text-white" : "text-neutral-900"
-            }`}
-          />
-        </button>
-
-        {/* Edit/Delete Buttons - Repositioned for mobile */}
-        <div className="absolute bottom-14 sm:bottom-4 right-3 sm:right-4 flex gap-2 z-10">
-          <button
-            className="px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm md:text-base bg-blue-600 text-white font-semibold hover:bg-blue-700 transition active:scale-95 shadow-lg"
-            onClick={() => setShowEditModal(true)}
-          >
-            Edit
-          </button>
-          <button
-            className="px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm md:text-base bg-red-600 text-white font-semibold hover:bg-red-700 transition active:scale-95 shadow-lg"
-            onClick={handleDelete}
-          >
-            Delete
-          </button>
-        </div>
-
-        {/* Photo Index - Repositioned to avoid button overlap */}
-        <div
-          className={`absolute bottom-3 sm:bottom-4 left-3 sm:left-1/2 sm:-translate-x-1/2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-semibold ${
-            theme === "dark"
-              ? "bg-black/70 text-neutral-100"
-              : "bg-white/70 text-neutral-900"
-          } shadow-lg z-10`}
-        >
-          {photos.findIndex((p) => p.id === selectedPhoto.id) + 1} / {photos.length}
-        </div>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
+      </AnimatePresence>
 
       {/* Upload Modal */}
       <UploadModal
