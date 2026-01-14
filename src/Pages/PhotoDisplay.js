@@ -777,7 +777,7 @@ export default function PhotoGallery() {
               : "bg-yellow-300 text-neutral-900"
           }`}
         >
-          <span>⚠️ You are in Demo Mode — all changes will not be saved.</span>
+          <span>⚠️ You are in Demo Mode — all changes will not be saved and all uploads will be deleted.</span>
           <button
             onClick={() => setShowDemoBanner(false)}
             className="ml-4 font-bold hover:text-neutral-700"

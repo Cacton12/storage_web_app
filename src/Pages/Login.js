@@ -196,7 +196,7 @@ const Login = () => {
         aria-label="Toggle theme"
       >
         {theme === "light" ? (
-          <Moon className="w-5 h-5 text-neutral-800" />
+          <Moon className="w-5 h-5 text-neutral-200" />
         ) : (
           <Sun className="w-5 h-5 text-yellow-400" />
         )}
